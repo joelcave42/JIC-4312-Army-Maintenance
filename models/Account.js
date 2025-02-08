@@ -9,10 +9,12 @@ const AccountSchema = new mongoose.Schema({
         enum: ['clerk', 'maintainer', 'manager', 'operator', 'supervisor'],
         required: true,
     },
+    isActive: {type: Boolean, default: false, required: false},
 });
 
 // Pre-save hook to hash password
 AccountSchema.pre("save", async function () {
+    if (!this.isModified("password")) return;
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
 });
@@ -37,5 +39,26 @@ AccountSchema.statics.createUser = async function (supervisorId, userDetails) {
     const newUser = new this(userDetails);
     return await newUser.save();
 };
+
+AccountSchema.statics.activateUser = async function (supervisorId, userId) {
+    const supervisor = await this.findById(supervisorId);
+    if (!supervisor || supervisor.accountType !== 'supervisor') {
+        throw new Error('Only supervisors can activate accounts');
+    }
+
+    const user = await this.findById(userId);
+    if (!user) {
+        throw new Error('User not found');
+    }
+
+    if (user.isActive) {
+        throw new Error('User is already active');
+    }
+
+    user.isActive = true;
+    await user.save();
+    return user;
+
+}
 
 module.exports = mongoose.model("Account", AccountSchema);
