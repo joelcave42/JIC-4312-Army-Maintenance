@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import "../styles/SignUpPage.css"; // Optional styling import
+import armyimage from '../assets/armyimage.png';
+import armyImageWhite from '../assets/armyImageWhite.png';
 import { useNavigate } from "react-router-dom";
  
 function SignUpPage() {
@@ -44,7 +46,13 @@ function SignUpPage() {
         Back to Login
       </button>
       <div className="signup-container">
+        {/* Army Logo */}
+        <img src={armyImageWhite} alt="U.S. Army Logo" className="army-logo" />
+
         <h2>Create an Account</h2>
+        <p className="disclaimer">
+          For official use by authorized U.S. Army personnel.
+        </p>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="username">Username:</label>
@@ -54,6 +62,8 @@ function SignUpPage() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
+              placeholder="Enter your username"
+
             />
           </div>
           <div className="form-group">
@@ -64,6 +74,8 @@ function SignUpPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              placeholder="Enter your password"
+
             />
           </div>
           <div className="form-group">
