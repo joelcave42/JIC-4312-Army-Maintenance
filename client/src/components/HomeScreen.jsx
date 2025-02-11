@@ -19,7 +19,13 @@ const HomeScreen = () => {
           className="home-button" 
           onClick={() => navigate("/fault-list")}
         >
-          View Fault List
+          View Current Fault List
+        </button>
+        <button 
+          className="home-button" 
+          onClick={() => navigate("/completed-faults")}
+        >
+          View Previously Corrected Faults
         </button>
       </div>
     </div>

@@ -6,6 +6,7 @@ import SignUpPage from "./components/SignUpPage";
 import FaultSubmissionForm from "./components/FaultSubmissionForm";
 import FaultList from "./components/FaultList";
 import HomeScreen from "./components/HomeScreen";
+import CompletedFaultList from "./components/CompletedFaultList";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -52,6 +53,7 @@ function App() {
               <Route path="/home" element={<HomeScreen />} />
               <Route path="/fault-submission" element={<FaultSubmissionForm />} />
               <Route path="/fault-list" element={<FaultList />} />
+              <Route path="/completed-faults" element={<CompletedFaultList />} />
               {}
               <Route path="*" element={<Navigate to="/home" replace />} />
             </>

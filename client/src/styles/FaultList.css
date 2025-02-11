@@ -66,8 +66,8 @@
 
 .fault-actions {
   display: flex;
-  justify-content: flex-end;
-  margin-top: 10px;
+  justify-content: wrap;
+  justify-content: space-between;
 }
 
 .delete-btn {
@@ -85,6 +85,23 @@
 .delete-btn:hover {
   background: #e85a5a;
   transform: translateY(-2px);
+}
+
+.correct-btn {
+    background: #ffc317;
+    color: #000;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.correct-btn:hover{
+    background:#e6b813;
+    transform: translateY(-2px);
 }
 
 /* Toggle Fault List Button */
