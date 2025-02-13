@@ -92,7 +92,7 @@ const loginUser = async (req, res) => {
         }
 
         if (!user.isActive) {
-            return res.status(403).json({ success: false, message: "User account is not actived" });
+            return res.status(403).json({ success: false, message: "Supervisor must verify account before you can login" });
         }
 
         // Compare passwords

@@ -75,7 +75,8 @@ function App() {
           {}
           {isLoggedIn ? (
             <>
-              <Route path="/home" element={<HomeScreen />} />
+              {/* Pass userType as a prop to HomeScreen */}
+              <Route path="/home" element={<HomeScreen userType={userType} />} />
               <Route path="/fault-submission" element={<FaultSubmissionForm />} />
               <Route path="/fault-list" element={<FaultList />} />
               <Route path="/completed-faults" element={<CompletedFaultList />} />
