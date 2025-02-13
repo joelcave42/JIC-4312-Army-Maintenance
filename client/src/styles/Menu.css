@@ -1,0 +1,31 @@
+/* Menu.css */
+
+.menu {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    max-width: 300px;
+    margin: 20px auto; /* Centers the menu horizontally and adds vertical spacing */
+  }
+  
+  .menu button {
+    padding: 15px 30px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #2a362a;
+    background-color: #ffc317;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    width: 100%;
+    font-family: Arial, sans-serif;
+  }
+  
+  .menu button:hover {
+    background-color: #e6b813;
+    transform: scale(1.05);
+  }
+  

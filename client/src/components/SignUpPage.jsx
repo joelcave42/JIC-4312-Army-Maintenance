@@ -7,11 +7,18 @@ import { useNavigate } from "react-router-dom";
 function SignUpPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState(""); // New state for password confirmation
   const [accountType, setAccountType] = useState("clerk"); // Default to the first account type
   const navigate = useNavigate();
  
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Check if the password and confirm password match
+    if (password !== confirmPassword) {
+      alert("Passwords do not match. Please re-enter.");
+      return; // Prevent submission if they don't match
+    }
  
     const newUser = { username, password, accountType };
  
@@ -63,7 +70,6 @@ function SignUpPage() {
               onChange={(e) => setUsername(e.target.value)}
               required
               placeholder="Enter your username"
-
             />
           </div>
           <div className="form-group">
@@ -75,7 +81,18 @@ function SignUpPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
               placeholder="Enter your password"
-
+            />
+          </div>
+          {/* New Confirm Password Field */}
+          <div className="form-group">
+            <label htmlFor="confirmPassword">Confirm Password:</label>
+            <input
+              type="password"
+              id="confirmPassword"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              placeholder="Confirm your password"
             />
           </div>
           <div className="form-group">
@@ -86,7 +103,6 @@ function SignUpPage() {
               onChange={(e) => setAccountType(e.target.value)}
               required
             >
-              {/* Use the account types from the model */}
               <option value="clerk">Clerk</option>
               <option value="maintainer">Maintainer</option>
               <option value="manager">Manager</option>
