@@ -1,14 +1,16 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import Menu from "./Menu";
 import "../styles/HomeScreen.css";
 
-const HomeScreen = () => {
-  const navigate = useNavigate();
-
+const HomeScreen = ({ userType }) => {
   return (
     <div className="home-screen">
-      <h1 className="home-title">U.S. Army Equipment Maintenance Intake System</h1>
-      <div className="home-buttons">
+      <h1 className="home-title">
+        U.S. Army Equipment Maintenance Intake System
+      </h1>
+      <h2>Will implement dashboard features in the future</h2>
+
+      {/* <div className="home-buttons">
         <button 
           className="home-button" 
           onClick={() => navigate("/fault-submission")}
@@ -27,7 +29,10 @@ const HomeScreen = () => {
         >
           View Previously Corrected Faults
         </button>
-      </div>
+      </div> */}
+      
+      {/* Render the role-based menu */}
+      <Menu userType={userType} />
     </div>
   );
 };
