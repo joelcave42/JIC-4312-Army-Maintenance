@@ -18,7 +18,6 @@ const createAccount = async (req, res) => {
 // Create account as a supervisor
 const createAccountAsSupervisor = async (req, res) => {
     try {
-        // Temporarily bypass the supervisor check
         const { username, password, accountType } = req.body;
 
         // Validate that the account type is not another supervisor
@@ -45,15 +44,55 @@ const getAccounts = async (req, res) => {
     }
 };
 
+const getUnapprovedAccounts = async (req, res) => {
+    try {
+        const accounts = await Account.find({ isActive: false });
+        res.status(200).json({ success: true, data: accounts });
+
+    } catch(error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+const approveAccount = async (req, res) => {
+    try { 
+        const userId = req.params.userId;
+
+        const user = await Account.findById(userId);
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        if (user.isActive) {
+            return res.status(400).json({ success: false, message: "User is already active" });
+        }
+
+        user.isActive = true; 
+        await user.save(); 
+
+        res.status(200).json({ success: true, message: "Account approved", data: user });
+
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+
+
 // Login user
 const loginUser = async (req, res) => {
     try {
+
         const { username, password } = req.body;
 
         // Check if the user exists
         const user = await Account.findOne({ username });
         if (!user) {
             return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        if (!user.isActive) {
+            return res.status(403).json({ success: false, message: "User account is not actived" });
         }
 
         // Compare passwords
@@ -81,4 +120,6 @@ module.exports = {
     createAccountAsSupervisor,
     getAccounts,
     loginUser,
+    getUnapprovedAccounts,
+    approveAccount,
 };

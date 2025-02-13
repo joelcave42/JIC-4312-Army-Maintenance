@@ -7,15 +7,16 @@ const cors = require('cors');
 const connectDB = require("./db/connect");
 const peopleRouter = require("./routes/people");
 const faultsRouter = require("./routes/faults");
-const accountsRouter = require("./routes/accounts"); // Import the accounts router
+const accountsRouter = require("./routes/accounts"); 
 
 app.use(express.json());
 app.use(cors());
 
+
 // Register routes
 app.use("/api/v1", peopleRouter);
 app.use("/api/v1/faults", faultsRouter);
-app.use("/api/v1/accounts", accountsRouter); // Add this line for accounts
+app.use("/api/v1/accounts", accountsRouter); 
 
 const port = process.env.PORT || 3000;
 

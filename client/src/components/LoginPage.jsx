@@ -28,6 +28,7 @@ function LoginPage({ onLogin }) {
       // Handle success
       if (response.data.success) {
         console.log('Login successful:', response.data);
+        localStorage.setItem("username", username);
         onLogin(response.data); // Pass the logged-in user data to parent component
       }
     } catch (err) {
@@ -86,6 +87,8 @@ function LoginPage({ onLogin }) {
             {loading ? 'Logging in...' : 'Sign in'}
           </button>
         </form>
+
+
 
         {/* Sign Up Link */}
         <p
