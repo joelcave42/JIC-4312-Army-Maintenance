@@ -10,43 +10,43 @@ const Menu = ({ userType }) => {
       {userType === "clerk" && (
         <>
           <button onClick={() => navigate("/fault-submission")}>
-            Fault Submission Form
+            Start 5988
           </button>
           <button onClick={() => navigate("/fault-list")}>
-            View Current Fault List
+            Check Reported Faults
           </button>
         </>
       )}
 
       {userType === "maintainer" && (
         <>
-          <button onClick={() => navigate("/assigned-faults")}>
-            View Assigned Faults
+          <button onClick={() => navigate("/fault-submission")}>
+            Start 5988
           </button>
-          <button onClick={() => navigate("/completed-faults")}>
-            View Completed Faults
+          <button onClick={() => navigate("/fault-list")}>
+            Check Reported Faults
           </button>
         </>
       )}
 
       {userType === "manager" && (
         <>
-          <button onClick={() => navigate("/manager-dashboard")}>
-            Manager Dashboard
+          <button onClick={() => navigate("/fault-submission")}>
+            Start 5988
           </button>
           <button onClick={() => navigate("/fault-list")}>
-            View All Faults
+            Check Reported Faults
           </button>
         </>
       )}
 
       {userType === "operator" && (
         <>
-          <button onClick={() => navigate("/operator-dashboard")}>
-            Operator Dashboard
+          <button onClick={() => navigate("/fault-submission")}>
+            Start 5988
           </button>
-          <button onClick={() => navigate("/equipment-status")}>
-            View Equipment Status
+          <button onClick={() => navigate("/fault-list")}>
+            Check Reported Faults
           </button>
         </>
       )}
@@ -56,8 +56,11 @@ const Menu = ({ userType }) => {
           <button onClick={() => navigate("/supervisor-dashboard")}>
             Supervisor Dashboard
           </button>
-          <button onClick={() => navigate("/manage-faults")}>
-            Manage Faults
+          <button onClick={() => navigate("/fault-submission")}>
+            Start 5988
+          </button>
+          <button onClick={() => navigate("/fault-list")}>
+            Check Reported Faults
           </button>
         </>
       )}
