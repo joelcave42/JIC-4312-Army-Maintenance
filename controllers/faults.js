@@ -9,6 +9,24 @@ const getAllFaults = async (req, res) => {
     }
 };
 
+const getPendingFaults = async (req, res) => {
+    try {
+        const faults = await Fault.find({ status: "pending" });
+        res.status(200).json({ faults, count: faults.length });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+const getCompletedFaults = async (req, res) => {
+    try {
+        const faults = await Fault.find({ status: "completed" });
+        res.status(200).json({ faults, count: faults.length });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
 const addFault = async (req, res) => {
     try {
         const fault = await Fault.create(req.body);
@@ -47,6 +65,24 @@ const updateFault = async (req, res) => {
     }
 };
 
+const markFaultCorrected = async (req, res) => {
+    try{
+        const { id: faultID} = req.params;
+        const updatedFault = await Fault.findByIdAndUpdate(
+            faultID,
+            { status: "completed" },
+            { new: true }
+        );
+
+        if (!updatedFault) {
+            return res.status(404).json({ msg: `Fault with ID ${faultID} doesn't exist`});
+        }
+        res.status(200).json({ updateFault });
+    } catch (error) {
+        res.status(500).json({ message: `Error marking fault as corrected: ${error.message}` });
+    }
+}
+
 const deleteFault = async (req, res) => {
     const { id: faultID } = req.params;
     try {
@@ -63,8 +99,11 @@ const deleteFault = async (req, res) => {
 
 module.exports = {
     getAllFaults,
+    getPendingFaults,
+    getCompletedFaults,
     addFault,
     getFault,
     updateFault,
+    markFaultCorrected,
     deleteFault,
 };

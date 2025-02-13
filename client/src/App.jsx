@@ -7,6 +7,9 @@ import FaultSubmissionForm from "./components/FaultSubmissionForm";
 import FaultList from "./components/FaultList";
 import UnapprovedAccounts from "./components/UnapprovedAccounts"; 
 import SupervisorDashboard from "./components/SupervisorDashboard"; 
+import HomeScreen from "./components/HomeScreen";
+import CompletedFaultList from "./components/CompletedFaultList";
+
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -41,7 +44,7 @@ function App() {
     fetchUserType(); // Corrected: Fetch userType after login
     localStorage.setItem("isLoggedIn", "true"); // Save login state
   };
- 
+
   const handleLogout = () => {
     setIsLoggedIn(false);
     setUserType("");
@@ -49,23 +52,34 @@ function App() {
     localStorage.removeItem("username");
     localStorage.removeItem("userType");
   };
- 
+
   return (
     <Router>
       <div className="container-main">
         <ToastContainer position="top-center" />
- 
+
         <Routes>
-          {/* Public Routes */}
+          {}
           <Route
             path="/"
-            element={isLoggedIn ? <Navigate to="/fault-submission" /> : <LoginPage onLogin={handleLogin} />}
+            element={
+              isLoggedIn ? (
+                <Navigate to="/home" replace />
+              ) : (
+                <LoginPage onLogin={handleLogin} />
+              )
+            }
           />
           <Route path="/signup" element={<SignUpPage />} />
- 
-          {/* Protected Routes */}
+
+          {}
           {isLoggedIn ? (
             <>
+              <Route path="/home" element={<HomeScreen />} />
+              <Route path="/fault-submission" element={<FaultSubmissionForm />} />
+              <Route path="/fault-list" element={<FaultList />} />
+              <Route path="/completed-faults" element={<CompletedFaultList />} />
+              
               <Route
                 path="/fault-submission"
                 element={
@@ -79,14 +93,15 @@ function App() {
               {userType === "supervisor" && (
                 <Route path="/supervisor-dashboard" element={<SupervisorDashboard />} />  
               )}
+              
+              <Route path="*" element={<Navigate to="/home" replace />} />
             </>
           ) : (
-            // Redirect to login if not logged in
-            <Route path="*" element={<Navigate to="/" />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           )}
         </Routes>
- 
-        {/* Logout Button */}
+
+        {}
         {isLoggedIn && (
           <div
             style={{
@@ -136,5 +151,4 @@ function App() {
     </Router>
   );
 }
- 
 export default App;

@@ -1,0 +1,60 @@
+.completed-fault-list-main {
+    padding: 20px;
+    max-width: 1200px;
+    margin: auto;
+    background: #232f23;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+  }
+  
+  .completed-fault-list-main h2 {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #ffc317;
+  }
+  
+  .completed-fault-items {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  .completed-fault-item {
+    background: #2a362a;
+    border: 1px solid #ffc317;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  }
+  
+  .vehicle-id {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #ffc317;
+  }
+  
+  .completed-fault-issues {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 10px 0;
+  }
+  
+  .completed-issues-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .completed-issue-item {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  

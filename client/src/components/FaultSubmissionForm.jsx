@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import {useNavigate} from "react-router-dom";
 import "../styles/FaultSubmissionForm.css";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
@@ -10,6 +11,7 @@ import { store } from "../store";
 import { toast } from "react-toastify";
 
 const FaultSubmissionForm = () => {
+  const navigate = useNavigate()
   const { inputValues } = useSelector((state) => state.globalValues);
   const dispatch = useDispatch();
 
@@ -139,6 +141,7 @@ const FaultSubmissionForm = () => {
 
   return (
     <div className="fault-submission-main">
+      <button className="back-button" onClick={() => navigate("/home")}>Back</button>
       <div className="vehicle-id-box">Vehicle: A50</div>
       <form className="fault-submission-form" onSubmit={handleSubmit}>
         <h1 className="form-title">PMCS Walkthrough</h1>
