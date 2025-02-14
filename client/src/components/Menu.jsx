@@ -4,10 +4,13 @@ import "../styles/Menu.css"; // Optional styling
 
 const Menu = ({ userType }) => {
   const navigate = useNavigate();
+  const normalizedUserType = userType ? userType.toLowerCase().trim() : "";
+
+  console.log("Normalized User Type:", normalizedUserType);
 
   return (
     <div className="menu">
-      {userType === "clerk" && (
+      {normalizedUserType === "clerk" && (
         <>
           <button onClick={() => navigate("/fault-submission")}>
             Start 5988
@@ -18,7 +21,7 @@ const Menu = ({ userType }) => {
         </>
       )}
 
-      {userType === "maintainer" && (
+      {normalizedUserType === "maintainer" && (
         <>
           <button onClick={() => navigate("/fault-submission")}>
             Start 5988
@@ -29,7 +32,7 @@ const Menu = ({ userType }) => {
         </>
       )}
 
-      {userType === "manager" && (
+      {normalizedUserType === "manager" && (
         <>
           <button onClick={() => navigate("/fault-submission")}>
             Start 5988
@@ -40,7 +43,7 @@ const Menu = ({ userType }) => {
         </>
       )}
 
-      {userType === "operator" && (
+      {normalizedUserType === "operator" && (
         <>
           <button onClick={() => navigate("/fault-submission")}>
             Start 5988
@@ -51,7 +54,7 @@ const Menu = ({ userType }) => {
         </>
       )}
 
-      {userType === "supervisor" && (
+      {normalizedUserType === "supervisor" && (
         <>
           <button onClick={() => navigate("/supervisor-dashboard")}>
             Supervisor Dashboard
