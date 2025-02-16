@@ -5,7 +5,6 @@ const express = require("express");
 const app = express();
 const cors = require('cors');
 const connectDB = require("./db/connect");
-const peopleRouter = require("./routes/people");
 const faultsRouter = require("./routes/faults");
 const accountsRouter = require("./routes/accounts"); 
 
@@ -14,7 +13,6 @@ app.use(cors());
 
 
 // Register routes
-app.use("/api/v1", peopleRouter);
 app.use("/api/v1/faults", faultsRouter);
 app.use("/api/v1/accounts", accountsRouter); 
 
