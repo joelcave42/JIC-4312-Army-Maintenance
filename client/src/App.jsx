@@ -135,7 +135,7 @@ function App() {
                   style={{
                     background: "#973c12",
                     color: "white",
-                    padding: "10px 20px",
+                    padding: "10px 10px",
                     borderRadius: "3px",
                     border: "none",
                     cursor: "pointer",
