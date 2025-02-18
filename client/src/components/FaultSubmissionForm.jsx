@@ -15,6 +15,7 @@ const FaultSubmissionForm = () => {
   const { inputValues } = useSelector((state) => state.globalValues);
   const dispatch = useDispatch();
 
+  // List of faults possible for the given vehicle
   const faultGroups = [
     {
       title: "Tires and Wheels",
@@ -113,6 +114,7 @@ const FaultSubmissionForm = () => {
 
   const [selectedFaults, setSelectedFaults] = useState([]);
 
+  // Allows for checkboxes to be clicked
   const handleCheckboxChange = (fault) => {
     setSelectedFaults((prevSelected) =>
       prevSelected.includes(fault)
@@ -121,6 +123,7 @@ const FaultSubmissionForm = () => {
     );
   };
 
+  // Adds submitted faults to the total fault and pending fault lists
   const handleSubmit = async (e) => {
     e.preventDefault();
     const url = "http://localhost:3000/api/v1/faults";
