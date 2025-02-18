@@ -16,9 +16,11 @@ app.use(cors());
 app.use("/api/v1/faults", faultsRouter);
 app.use("/api/v1/accounts", accountsRouter); 
 
+// Set connection port to port specified in .env or default (3000)
 const port = process.env.PORT || 3000;
 
 const start = async () => {
+    // Connect to MongoDB using URI found in .env
     try {
         console.log("MongoDB URI:", process.env.MONGO_URI)
         await connectDB(process.env.MONGO_URI);

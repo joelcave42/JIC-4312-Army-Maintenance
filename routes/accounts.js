@@ -8,7 +8,6 @@ const Account = require ("../models/Account")
 
 // Routes
 
-
 router.get("/test-route", (req, res) => {
     res.send("✅ The /test-route is working!");
 });

@@ -18,6 +18,7 @@ const UnapprovedAccounts = () => {
             });
     }, []);
 
+    // Allows supervisors to approve accounts
     const approveAccount = async (userId) => {
         try {
             const response = await fetch(`http://localhost:3000/api/v1/accounts/approve/${userId}`, {

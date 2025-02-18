@@ -9,6 +9,7 @@ const SupervisorDashboard = () => {
   const [accounts, setAccounts] = useState([]);
   const [isVisible, setIsVisible] = useState(false);
 
+  // Fetches all accounts that have not been approved by a supervisor
   const fetchUnapprovedAccounts = async () => {
     try {
       const response = await axios.get(url);
@@ -19,6 +20,7 @@ const SupervisorDashboard = () => {
     }
   };
 
+  // Allows supervisors to approve accounts
   const approveAccount = async (userId) => {
     try {
       await axios.put(`http://localhost:3000/api/v1/accounts/approve/${userId}`);

@@ -44,6 +44,7 @@ const getAccounts = async (req, res) => {
     }
 };
 
+// Get all unnaproved accounts
 const getUnapprovedAccounts = async (req, res) => {
     try {
         const accounts = await Account.find({ isActive: false });
@@ -54,6 +55,7 @@ const getUnapprovedAccounts = async (req, res) => {
     }
 };
 
+// Allows supervisor to approve accounts
 const approveAccount = async (req, res) => {
     try { 
         const userId = req.params.userId;

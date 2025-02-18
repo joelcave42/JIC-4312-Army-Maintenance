@@ -24,6 +24,7 @@ function App() {
     }
   }, []);
 
+  // Fetches the current user's type
   const fetchUserType = async () => {
     try {
       const storedUsername = localStorage.getItem("username");
@@ -39,12 +40,14 @@ function App() {
     }
   };
  
+  // Provides functionality for user to log in
   const handleLogin = () => {
     setIsLoggedIn(true);
     fetchUserType(); // Corrected: Fetch userType after login
     localStorage.setItem("isLoggedIn", "true"); // Save login state
   };
 
+  // Provides functionality for user to log out
   const handleLogout = () => {
     setIsLoggedIn(false);
     setUserType("");
