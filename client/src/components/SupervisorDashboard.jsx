@@ -59,7 +59,7 @@ const SupervisorDashboard = () => {
               accounts.map((account) => (
                 <div key={account._id} className="account-item">
                   <p className="account-username">Username: {account.username}</p>
-                  <p className="account-type">Account Type: {account.accountType}</p>
+                  <p className="account-type">Account Type: {account.accountType.charAt(0).toUpperCase() + account.accountType.slice(1)}</p>
                   <div className="account-actions">
                     <button onClick={() => approveAccount(account._id)} className="approve-btn">
                       Approve
