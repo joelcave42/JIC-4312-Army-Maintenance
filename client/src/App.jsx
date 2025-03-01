@@ -35,8 +35,10 @@ function App() {
       if (!response.ok) throw new Error("Failed to fetch user info");
       const data = await response.json();
       setUserType(data.accountType);
-      console.log("Fetched data: " ,data)
+      
       localStorage.setItem("userType", data.accountType);
+      localStorage.setItem("userID", data._id);
+
     } catch (error) {
       console.error(error.message);
     }
@@ -54,6 +56,7 @@ function App() {
     localStorage.removeItem("isLoggedIn"); // Remove login state
     localStorage.removeItem("username");
     localStorage.removeItem("userType");
+    localStorage.removeItem("userID");
   };
 
   return (

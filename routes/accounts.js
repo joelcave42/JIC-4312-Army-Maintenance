@@ -9,9 +9,6 @@ const Account = require ("../models/Account")
 // Routes
 
 
-router.get("/test-route", (req, res) => {
-    res.send("✅ The /test-route is working!");
-});
 
 router.get("/user-info", async (req, res) => {
 
@@ -28,7 +25,7 @@ router.get("/user-info", async (req, res) => {
             return res.status(404).json({ success: false, message: "User not found" });
         }
 
-        res.json({ accountType: user.accountType });
+        res.json({ accountType: user.accountType , userID: user._id });
 
     } catch(error) {
         console.error("Error:", error.message);
