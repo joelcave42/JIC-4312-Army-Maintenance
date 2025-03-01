@@ -11,7 +11,7 @@ const FaultSchema = new mongoose.Schema({
     },
     status: {
         type: [String],
-        enum: ["pending", "completed"],
+        enum: ["pending","claimed", "completed"],
         default: "pending",
     },
     customIssue: {
@@ -20,8 +20,15 @@ const FaultSchema = new mongoose.Schema({
     },
     createdAt: {
         type: Date,
-        default: Date.now
+        default: Date.now,
+        index: true
+    },
+    claimedBy: {
+        type: String,
+        default: null
     }
 });
+
+FaultSchema.index({ createdAt: 1 }); //stores indexes from oldest creation to newest
 
 module.exports = mongoose.model("Fault", FaultSchema);

@@ -3,6 +3,7 @@ const Fault = require("../models/Fault");
 const getAllFaults = async (req, res) => {
     try {
         const faults = await Fault.find({});
+
         res.status(200).json({ faults, count: faults.length });
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -96,6 +97,25 @@ const deleteFault = async (req, res) => {
     }
 };
 
+const claimFault = async (req, res) => {
+    try {
+      const { id: faultID } = req.params;
+      const { maintainerID } = req.body; 
+  
+      const updatedFault = await Fault.findByIdAndUpdate(faultID, 
+        { status: "claimed", claimedBy: maintainerID }, 
+        { new: true }
+    );
+    if (!updatedFault) {
+        return res.status(404).json({ msg: `Fault with ID ${faultID} doesn't exist` });
+    }
+    res.status(200).json({ updateFault });
+    
+    } catch (error) {
+        res.status(500).json({ message: `Error marking fault as corrected: ${error.message}` });
+    }
+  };
+
 
 module.exports = {
     getAllFaults,
@@ -106,4 +126,5 @@ module.exports = {
     updateFault,
     markFaultCorrected,
     deleteFault,
+    claimFault,
 };

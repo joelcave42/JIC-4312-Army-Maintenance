@@ -9,6 +9,8 @@ import UnapprovedAccounts from "./components/UnapprovedAccounts";
 import SupervisorDashboard from "./components/SupervisorDashboard"; 
 import HomeScreen from "./components/HomeScreen";
 import CompletedFaultList from "./components/CompletedFaultList";
+import ClaimFaults from "./components/ClaimFaults";
+import ClaimedFaults from "./components/ClaimedFaults";
 
 
 function App() {
@@ -33,6 +35,7 @@ function App() {
       if (!response.ok) throw new Error("Failed to fetch user info");
       const data = await response.json();
       setUserType(data.accountType);
+      console.log("Fetched data: " ,data)
       localStorage.setItem("userType", data.accountType);
     } catch (error) {
       console.error(error.message);
@@ -90,6 +93,10 @@ function App() {
                   </>
                 }
               />
+
+              <Route path="/claim-faults" element={<ClaimFaults />} />
+              <Route path="/claimed-faults" element={<ClaimedFaults />} />
+              
               {/* Supervisor Route */}
               {userType === "supervisor" && (
                 <Route path="/supervisor-dashboard" element={<SupervisorDashboard />} />  

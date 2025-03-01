@@ -108,6 +108,7 @@ const loginUser = async (req, res) => {
             data: {
                 username: user.username,
                 accountType: user.accountType,
+                userID: user._id,
             },
         });
     } catch (error) {
