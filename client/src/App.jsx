@@ -34,10 +34,11 @@ function App() {
       const response = await fetch(`http://localhost:3000/api/v1/accounts/user-info?username=${storedUsername}`);
       if (!response.ok) throw new Error("Failed to fetch user info");
       const data = await response.json();
+      console.log("Fetched data: " , data)
       setUserType(data.accountType);
       
       localStorage.setItem("userType", data.accountType);
-      localStorage.setItem("userID", data._id);
+      localStorage.setItem("userID", data.userID);
 
     } catch (error) {
       console.error(error.message);

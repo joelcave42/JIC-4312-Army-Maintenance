@@ -98,9 +98,11 @@ const deleteFault = async (req, res) => {
 };
 
 const claimFault = async (req, res) => {
+    
     try {
       const { id: faultID } = req.params;
       const { maintainerID } = req.body; 
+      console.log("maintainerID: ", maintainerID);
   
       const updatedFault = await Fault.findByIdAndUpdate(faultID, 
         { status: "claimed", claimedBy: maintainerID }, 
