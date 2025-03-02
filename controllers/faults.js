@@ -1,5 +1,6 @@
 const Fault = require("../models/Fault");
 
+// Get all faults
 const getAllFaults = async (req, res) => {
     try {
         const faults = await Fault.find({});
@@ -10,6 +11,7 @@ const getAllFaults = async (req, res) => {
     }
 };
 
+// Get all pending faults
 const getPendingFaults = async (req, res) => {
     try {
         const faults = await Fault.find({ status: "pending" });
@@ -19,6 +21,7 @@ const getPendingFaults = async (req, res) => {
     }
 }
 
+// Get all completed faults
 const getCompletedFaults = async (req, res) => {
     try {
         const faults = await Fault.find({ status: "completed" });
@@ -28,6 +31,7 @@ const getCompletedFaults = async (req, res) => {
     }
 }
 
+// Add fault to the total and pending fault lists
 const addFault = async (req, res) => {
     try {
         const fault = await Fault.create(req.body);
@@ -37,6 +41,7 @@ const addFault = async (req, res) => {
     }
 };
 
+// Get fault by object ID
 const getFault = async (req, res) => {
     try {
         const { id: faultID } = req.params;
@@ -50,6 +55,7 @@ const getFault = async (req, res) => {
     }
 };
 
+// Update fault by object ID
 const updateFault = async (req, res) => {
     try {
         const { id: faultID } = req.params;
@@ -66,6 +72,7 @@ const updateFault = async (req, res) => {
     }
 };
 
+// Mark fault corrected by object ID
 const markFaultCorrected = async (req, res) => {
     try{
         const { id: faultID} = req.params;
@@ -84,6 +91,7 @@ const markFaultCorrected = async (req, res) => {
     }
 }
 
+// Delete fault by object ID
 const deleteFault = async (req, res) => {
     const { id: faultID } = req.params;
     try {
@@ -118,6 +126,17 @@ const claimFault = async (req, res) => {
     }
   };
 
+const getOperatorFaults = async (req, res) => {
+    try {
+        const { username } = req.params;
+        const faults = await Fault.find({ createdBy: username });
+        res.status(200).json({ faults, count: faults.length });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+
 
 module.exports = {
     getAllFaults,
@@ -129,4 +148,5 @@ module.exports = {
     markFaultCorrected,
     deleteFault,
     claimFault,
+    getOperatorFaults,
 };

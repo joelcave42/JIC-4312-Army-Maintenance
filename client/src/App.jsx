@@ -11,6 +11,8 @@ import HomeScreen from "./components/HomeScreen";
 import CompletedFaultList from "./components/CompletedFaultList";
 import ClaimFaults from "./components/ClaimFaults";
 import ClaimedFaults from "./components/ClaimedFaults";
+import OperatorFaultList from "./components/OperatorFaultList";
+
 
 
 function App() {
@@ -26,6 +28,7 @@ function App() {
     }
   }, []);
 
+  // Fetches the current user's type
   const fetchUserType = async () => {
     try {
       const storedUsername = localStorage.getItem("username");
@@ -45,12 +48,14 @@ function App() {
     }
   };
  
+  // Provides functionality for user to log in
   const handleLogin = () => {
     setIsLoggedIn(true);
     fetchUserType(); // Corrected: Fetch userType after login
     localStorage.setItem("isLoggedIn", "true"); // Save login state
   };
 
+  // Provides functionality for user to log out
   const handleLogout = () => {
     setIsLoggedIn(false);
     setUserType("");
@@ -87,6 +92,7 @@ function App() {
               <Route path="/fault-submission" element={<FaultSubmissionForm />} />
               <Route path="/fault-list" element={<FaultList />} />
               <Route path="/completed-faults" element={<CompletedFaultList />} />
+              <Route path="/operator-faults" element={<OperatorFaultList />} />
               
               <Route
                 path="/fault-submission"

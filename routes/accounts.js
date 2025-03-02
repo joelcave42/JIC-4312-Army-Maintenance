@@ -9,7 +9,6 @@ const Account = require ("../models/Account")
 // Routes
 
 
-
 router.get("/user-info", async (req, res) => {
 
 
