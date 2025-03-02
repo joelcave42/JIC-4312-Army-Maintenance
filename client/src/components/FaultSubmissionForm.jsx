@@ -130,6 +130,7 @@ const FaultSubmissionForm = () => {
     const faultData = {
       vehicleId: "A50", // Placeholder; replace with dynamic data if needed
       issues: selectedFaults,
+      createdBy: localStorage.getItem("username"),
     };
 
     try {

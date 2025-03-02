@@ -104,6 +104,16 @@ const deleteFault = async (req, res) => {
     }
 };
 
+const getOperatorFaults = async (req, res) => {
+    try {
+        const { username } = req.params;
+        const faults = await Fault.find({ createdBy: username });
+        res.status(200).json({ faults, count: faults.length });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 
 module.exports = {
     getAllFaults,
@@ -114,4 +124,5 @@ module.exports = {
     updateFault,
     markFaultCorrected,
     deleteFault,
+    getOperatorFaults,
 };

@@ -9,6 +9,7 @@ import UnapprovedAccounts from "./components/UnapprovedAccounts";
 import SupervisorDashboard from "./components/SupervisorDashboard"; 
 import HomeScreen from "./components/HomeScreen";
 import CompletedFaultList from "./components/CompletedFaultList";
+import OperatorFaultList from "./components/OperatorFaultList";
 
 
 function App() {
@@ -83,6 +84,7 @@ function App() {
               <Route path="/fault-submission" element={<FaultSubmissionForm />} />
               <Route path="/fault-list" element={<FaultList />} />
               <Route path="/completed-faults" element={<CompletedFaultList />} />
+              <Route path="/operator-faults" element={<OperatorFaultList />} />
               
               <Route
                 path="/fault-submission"
