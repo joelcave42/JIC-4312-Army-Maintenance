@@ -1,0 +1,112 @@
+ .claim-faults-main {
+    padding: 20px;
+    max-width: 1200px;
+    margin: auto;
+    background: #232f23; /* Dark Army green */
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+  }
+  
+  .claim-faults-title {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #ffc317; /* Army gold */
+  }
+  
+  .fault-items {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  
+  .fault-item {
+    background: #2a362a;
+    border: 1px solid #ffc317;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    
+    /* Ensures all boxes are the same height */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 250px; /* Fixed height for consistency */
+  }
+  
+  .vehicle-id {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #ffc317;
+  }
+  
+  .fault-issues {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 10px 0;
+  }
+  
+  /* Scrollable issues list inside the box */
+  .issues-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 80px; /* Limit height to ensure scrolling */
+    overflow-y: auto;
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: #ffc317 #2a362a; /* Gold scrollbar */
+  }
+  
+  .issues-list::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .issues-list::-webkit-scrollbar-thumb {
+    background: #ffc317;
+    border-radius: 5px;
+  }
+  
+  .issue-item {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  
+  /* Claim button always at bottom */
+  .fault-actions {
+    margin-top: auto; /* Pushes the button to the bottom */
+    display: flex;
+    justify-content: center;
+  }
+  
+  .claim-btn {
+    background: #ffc317; /* Gold */
+    color: #2a362a;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: background 0.3s, transform 0.2s;
+    width: 100%; /* Ensures consistency */
+  }
+  
+  .claim-btn:hover {
+    background: #e6b813;
+    transform: translateY(-2px);
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .fault-items {
+      grid-template-columns: 1fr;
+    }
+  
+    .fault-item {
+      height: auto; /* Allows flexible height on smaller screens */
+    }
+  }
+  

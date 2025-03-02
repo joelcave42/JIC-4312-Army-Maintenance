@@ -29,6 +29,12 @@ const Menu = ({ userType }) => {
           <button onClick={() => navigate("/fault-list")}>
             Check Reported Faults
           </button>
+          <button onClick={() => navigate("/claim-faults")}>
+            Claim Faults
+          </button>
+          <button onClick={() => navigate("/claimed-faults")}>
+            Claimed Faults
+          </button>
         </>
       )}
 
