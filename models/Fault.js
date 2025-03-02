@@ -10,13 +10,17 @@ const FaultSchema = new mongoose.Schema({
         required: true
     },
     status: {
-        type: [String],
+        type: String,
         enum: ["pending", "completed"],
         default: "pending",
     },
     customIssue: {
         type: String,
         required: false
+    },
+    createdBy: {
+        type: String,
+        required: true
     },
     createdAt: {
         type: Date,
