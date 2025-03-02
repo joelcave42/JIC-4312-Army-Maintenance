@@ -11,6 +11,7 @@ const CompletedFaultList = () => {
   const [completedFaults, setCompletedFaults] = useState([]);
   const { statusListener } = useSelector((state) => state.globalValues);
 
+  // Fetch corrected faults to display on dashboard
   const fetchCompletedFaults = async () => {
     try {
       const response = await axios.get(url);

@@ -15,6 +15,7 @@ const FaultList = () => {
   const { statusListener } = useSelector((state) => state.globalValues);
   const dispatch = useDispatch();
 
+  // Fetch pending faults to display on dashboard
   const fetchFaults = async () => {
     try {
       const response = await axios.get(`${url}/pending`);
@@ -24,6 +25,7 @@ const FaultList = () => {
     }
   };
 
+  // Deletes a fault from both the dashboard and the database
   const deleteFault = async (id) => {
     try {
       console.log("Deleting fault with ID:", id);
@@ -35,6 +37,7 @@ const FaultList = () => {
     }
   };
 
+  // Moves a fault from the pending list to the corrected list
   const correctFault = async (id) => {
     try{
         console.log("Correcting fault with ID:", id)
