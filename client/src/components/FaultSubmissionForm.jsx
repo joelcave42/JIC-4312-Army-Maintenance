@@ -481,6 +481,7 @@ const FaultSubmissionForm = () => {
     );
   };
 
+  // Adds submitted faults to the total fault and pending fault lists
   const handleSubmit = async (e) => {
     e.preventDefault();
     const url = "http://localhost:3000/api/v1/faults";
@@ -488,6 +489,7 @@ const FaultSubmissionForm = () => {
       vehicleId: selectedVehicle,
       timelines: selectedTimelines,
       issues: selectedFaults,
+      createdBy: localStorage.getItem("username"),
     };
 
     try {
