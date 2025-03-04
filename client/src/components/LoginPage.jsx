@@ -4,12 +4,15 @@ import '../styles/LoginPage.css';
 import armyimage from '../assets/armyimage.png';
 import armyImageWhite from '../assets/armyImageWhite.png';
 import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { setUsername } from '../features/globalValues/globalSlice';
 
 function LoginPage({ onLogin }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
 
   const navigate = useNavigate(); // Hook for navigation
 
@@ -29,6 +32,7 @@ function LoginPage({ onLogin }) {
       if (response.data.success) {
         console.log('Login successful:', response.data);
         localStorage.setItem("username", username);
+        dispatch(setUsername(username)); // Dispatch username to Redux store
         onLogin(response.data); // Pass the logged-in user data to parent component
       }
     } catch (err) {
@@ -87,8 +91,6 @@ function LoginPage({ onLogin }) {
             {loading ? 'Logging in...' : 'Sign in'}
           </button>
         </form>
-
-
 
         {/* Sign Up Link */}
         <p
