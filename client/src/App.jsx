@@ -11,7 +11,10 @@ import HomeScreen from "./components/HomeScreen";
 import CompletedFaultList from "./components/CompletedFaultList";
 import { useDispatch } from "react-redux";
 import { setUsername } from "./features/globalValues/globalSlice";
+import ClaimFaults from "./components/ClaimFaults";
+import ClaimedFaults from "./components/ClaimedFaults";
 import OperatorFaultList from "./components/OperatorFaultList";
+
 
 
 function App() {
@@ -41,8 +44,12 @@ function App() {
       const response = await fetch(`http://localhost:3000/api/v1/accounts/user-info?username=${storedUsername}`);
       if (!response.ok) throw new Error("Failed to fetch user info");
       const data = await response.json();
+      console.log("Fetched data: " , data)
       setUserType(data.accountType);
+      
       localStorage.setItem("userType", data.accountType);
+      localStorage.setItem("userID", data.userID);
+
     } catch (error) {
       console.error(error.message);
     }
@@ -62,6 +69,7 @@ function App() {
     localStorage.removeItem("isLoggedIn"); // Remove login state
     localStorage.removeItem("username");
     localStorage.removeItem("userType");
+    localStorage.removeItem("userID");
   };
 
   return (
@@ -102,6 +110,10 @@ function App() {
                   </>
                 }
               />
+
+              <Route path="/claim-faults" element={<ClaimFaults />} />
+              <Route path="/claimed-faults" element={<ClaimedFaults />} />
+              
               {/* Supervisor Route */}
               {userType === "supervisor" && (
                 <Route path="/supervisor-dashboard" element={<SupervisorDashboard />} />  
