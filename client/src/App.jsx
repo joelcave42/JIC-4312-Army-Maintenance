@@ -9,20 +9,26 @@ import UnapprovedAccounts from "./components/UnapprovedAccounts";
 import SupervisorDashboard from "./components/SupervisorDashboard"; 
 import HomeScreen from "./components/HomeScreen";
 import CompletedFaultList from "./components/CompletedFaultList";
-
+import { useDispatch } from "react-redux";
+import { setUsername } from "./features/globalValues/globalSlice";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userType, setUserType] = useState("");
+  const dispatch = useDispatch();
  
   // Load login state from localStorage when the app starts
   useEffect(() => {
     const storedLoginState = localStorage.getItem("isLoggedIn");
+    const storedUsername = localStorage.getItem("username");
     if (storedLoginState === "true") {
       setIsLoggedIn(true);
+      if (storedUsername) {
+        dispatch(setUsername(storedUsername));
+      }
       fetchUserType();
     }
-  }, []);
+  }, [dispatch]);
 
   const fetchUserType = async () => {
     try {

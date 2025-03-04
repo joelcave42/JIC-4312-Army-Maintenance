@@ -12,19 +12,29 @@ import { toast } from "react-toastify";
 
 const FaultSubmissionForm = () => {
   const navigate = useNavigate();
-  const { inputValues } = useSelector((state) => state.globalValues);
+  const { inputValues, username } = useSelector((state) => state.globalValues);
   const dispatch = useDispatch();
+  const [showConfirmation, setShowConfirmation] = useState(false);
+
+  // Add console logging to debug username
+  console.log('Current username:', username);
 
   // Vehicle-specific maintenance checklists with timelines
   const vehicleData = {
     A50: {
       id: "123456789", // represents vehicle serial number, which will be used to identify the vehicle
-      name: "HMMWV A50", //vehicle type with the current bumper number (or other easily identifiable feature)
+      name: "HMMWV (M998 Series)", //vehicle type
       timelines: {
         semiannual: {
           id: "semiannual",
           name: "Semi-Annual",
           inspectionGroups: [
+            {
+              title: "HMMWV PMCS NOT COMPLETED. ONLY PARTIALLY FILLED OUT FOR DEMO REASONS. COMPLETE BEFORE USING.",
+              items: [
+                
+              ]
+            },
             {
               title: "Pre-Service Checks",
               disclaimers: [
@@ -103,7 +113,7 @@ const FaultSubmissionForm = () => {
               ]
             },
             {
-            title: "Fuel System",
+              title: "Fuel System",
               items: [
                 {
                   id: "3_Fuel-System_a",
@@ -118,7 +128,8 @@ const FaultSubmissionForm = () => {
                 {
                   id: "3_Fuel-System_c",
                   procedure: "Inspect rear fuel injector nozzle rubber cap for presence and condition.",
-                  criteria: "Rubber cap missing or damaged."
+                  criteria: "Rubber cap missing or damaged.",
+                  image: "/images/3-c.png"
                 },
                 {
                   id: "3_Fuel-System_d",
@@ -173,7 +184,8 @@ const FaultSubmissionForm = () => {
                 {
                   id: "5_Protective-Control-Box_b",
                   procedure: "Ensure cannon plugs are securely connected to box.",
-                  criteria: null
+                  criteria: null,
+                  image: "/images/5-b.png"
                 },
               ]
             },
@@ -216,7 +228,8 @@ const FaultSubmissionForm = () => {
                 {
                   id: "7_Air-Intake-System_c",
                   procedure: "<strong>CAUTION:</strong> Do not clean CDR valve with solvent. This will damage the diaphgragm inside the CDR valve. Wiping with a rag is the only authorized method of cleaning. Remove and wipe off the CDR valve and hoses with a rag.",
-                  criteria: null
+                  criteria: null,
+                  image: "/images/7-c.png"
                 },
               ]
             },
@@ -263,15 +276,147 @@ const FaultSubmissionForm = () => {
               items: [
                 {
                   id: "10_Suspension-and-Steering-System_a",
-                  procedure: "---",
-                  criteria: "---"
+                  procedure: "Remove wheel and tire assembly (para. 8-3). Check front and rear lower ball joint mounting.For M996, M997, M1042, M1037, M1097, M1123, and \"A1\" and \"A2\" series vehicles, tighten rear lower ball joint to lower control arm locknuts to 60 lb-ft (81 N*m) and front to 35 lb-ft (48 N*m) and ensure cotter pin is present. Tighten ball joint slotted nut to 73 lb-ft (99 N*m) and ensure cotter pin is present.",
+                  criteria: "Capscrews or locknuts are finger or hand turnable."
+                },
+                {
+                  id: "10_Suspension-and-Steering-System_b",
+                  procedure: "Check front and rear upper ball joint mounting. Tighten upper ball joint to upper control arm locknuts to 21 lb-ft (29 N*m). Tighten upper control arm to control arm bracket locknuts to 260 lb-ft (353 N*m). Tighten ball joint slotted nut to 65 lb-ft (88 N*m) and ensure cotter pin is present.",
+                  criteria: "Capscrews or locknuts are finger or hand turnable."
+                },
+                {
+                  id: "10_Suspension-and-Steering-System_c",
+                  procedure: "<strong>NOTE:</strong> Do not over lubricate ball joints, one or two shots is adequate. Lubricate front and rear upper ball joints with GAA grease. <strong>NOTE:</strong> Do not lubricate shock absorber bushings, radius rod bushings, stabilizer bar bushing, or suspension arm pivot bushing.",
+                  criteria: null
+                },
+                {
+                  id: "10_Suspension-and-Steering-System_d",
+                  procedure: "Inspect control arms, control arm bushings, springs, shock absorbers, and bracket for damage.",
+                  criteria: "Control arm bent, bushing worn or obvious damage that would hinder operation.",
+                  image: "/images/10-d.png"
+                },
+                {
+                  id: "10_Suspension-and-Steering-System_e",
+                  procedure: "Inspect steering column U-joints, tie rods or radius rods, pitman arm, center link, and idler arm for breaks, cracks and wear.",
+                  criteria: "U-joints, tie rods, pitman arm or idler arm are worn or cracked.",
+                  image: "/images/10-e.png"
+                },
+                {
+                  id: "10_Suspension-and-Steering-System_e1",
+                  procedure: "Inspect steering column for security of mounting hardware.",
+                  criteria: "Steering column is not secure."
+                },
+                {
+                  id: "10_Suspension-and-Steering-System_f",
+                  procedure: "Inspect steering gear for mounting security. Tighten mounting bolts to 60 lb-ft (81 N*m).",
+                  criteria: "Any mounting bolt missing or unservicable."
+                },
+                {
+                  id: "10_Suspension-and-Steering-System_g",
+                  procedure: "Inspect power steering pump, power steering gear, hydraulic control valve, hoses, lines, and fittings for leaks or damage.",
+                  criteria: "Any class III leak. Any component damaged."
                 },
               ]
             },
+            {
+              title: "Brake System",
+              items: [
+                {
+                  id: "11_Brake-System_a",
+                  procedure: "Inspect master cylinder, hydro-boost, lines, and fittings for leaks and damage.",
+                  criteria: "Any leak. Plugged, broken, or damaged lines and fittings.",
+                  image: "/images/11-a.png"
+                },
+                {
+                  id: "11_Brake-System_b",
+                  procedure: "<strong>CAUTION:</strong> Use MIL-B-46176 Silicone Brake Fluid (BFS), for filling master brake cylinder. Failure to use BFS will cause damage to brake cylinder. Thoroughly clean exterior of master cylinder cover before removing cover (table 2-1). Dirt, water, or grease will contaminate brake fluid causing brake system damage. Do not use screwdriver to remove cover. Damage to bail wire will result. To prevent excessive fluid spillage, ensure that rubber diaphragm is completely seated before installing cover to master cyclinder. <strong>NOTE:</strong> Remove cover from brake master cyclinder by moving bail wire using thumb pressure only. Check master brake cylinder fluid level. Level should be 1/8 inch (3.2mm) from top of master cylinder reservoirs. Fill with BFS as necessary.",
+                  criteria: "Level below 1/8 inch (3.2mm) from top of master cylinder reservoir."
+                },
+                {
+                  id: "11_Brake-System_c",
+                  procedure: "Inspect service brake pads and rotor disks for wear (para. 7-11).",
+                  criteria: "Service brake pads less than 1/8 inch (3.2mm).",
+                  image: "/images/11-c.png"
+                },
+                {
+                  id: "11_Brake-System_d",
+                  procedure: "Inspect parkibg brake pads and rotor disk for wear (para. 7-3).",
+                  criteria: "Parking brake pads less than 1/8 inch (3.2mm).",
+                  image: "/images/11-d.png"
+                },
+                {
+                  id: "11_Brake-System_d1",
+                  procedure: "Inspect brake calipers and mounting hardware for damage or loose hardware.",
+                  criteria: "Brake calipers are damaged or mounting bolts are loose.",
+                  image: "/images/11-d1.png"
+                },
+                {
+                  id: "11_Brake-System_e",
+                  procedure: "Inspect dual service/park brake pads and rotor for wear (para. 7-21).",
+                  criteria: "Brake pads less than 1/8 inch (3.2mm)."
+                },
+                {
+                  id: "11_Brake-System_f",
+                  procedure: "Inspect parking brake cable, cable clip, lever, spring, and pushrod/guide pin for binding and loose components.",
+                  criteria: "Parking brake binding or vable frayed or broken. Spring or cable clip missing.",
+                  image: "/images/11-f.png"
+                },
+                {
+                  id: "11_Brake-System_g",
+                  procedure: "On vehicles equipped with a single parking brake assembly mounted between the rear prop shaft and rear differential, lubricate parking brake lever, parking brake cam, parking brake push pins, and parking brake guide pins with WTR. On vehicles equipped with a left and right parking/service brake assembly mounted between the rear axle half-shafts and rear  differential, lubricate the parking brake lever with WTR. The parking/service brake assembly needs no lubrication. ",
+                  criteria: null
+                },
+                {
+                  id: "11_Brake-System_h",
+                  procedure: "Inspect rear parking brake cables for damage and/or chaffing in the area of the control arm. If cables are damaged, replace cables (paragraph 7-23 or 7-24).",
+                  criteria: "Parking brake binding or cable frayed or broken."
+                },
+                {
+                  id: "11_Brake-System_i",
+                  procedure: "Inspect for presence of, or damage to, parking brake cable clamps.",
+                  criteria: null
+                },
+              ] 
+            },
+            {
+              title: "Engine and Transmission Mounts",
+              items: [
+                {
+                  id: "12_Engine-and-Transmission-Mounts_a",
+                  procedure: "Inspect engine mounts and insulators for loose, worn, and damaged condition.",
+                  criteria: "Engine mounts or insulators cracked, damaged, loose, or worn."
+                },
+                {
+                  id: "12_Engine-and-Transmission-Mounts_b",
+                  procedure: "Check for loose or missing engine mount capscrews and locknuts. If engine mount capscrews or locknuts are loose or missing, notify DS maintenance.",
+                  criteria: "Capscrews or locknuts, loose or missing."
+                },
+                {
+                  id: "12_Engine-and-Transmission-Mounts_c",
+                  procedure: "Using 3/4 inch torque adapter (refer to Appendix B, Item 145), tighten two capscrews securing transmission mount to adapter to 65 lb-ft (88 N*m). Tighten two locknuts securing transmission mount to crossmember to 28 lb-ft (38 N*m).",
+                  criteria: "Transmission mount loose, cracked, or damaged."
+                }
+              ]
+            },
+            {
+              title: "Starter",
+              items: [
+                {
+                  id: "13_Starter_a",
+                  procedure: "<strong>CAUTION:</strong> Disconnect negative cable. Inspect starter for mounting security. Tighten mounting bolts to 40 lb-ft (54 N*m).",
+                  criteria: "Mounting bolt missing or will not torque."
+                },
+                {
+                  id: "13_Starter_b",
+                  procedure: "Inspect cables and studs for loose nuts and damage.",
+                  criteria: "Stud nut loose."
+                }
+              ]
+            }
           ]
         },
         annual: {
-          id: "annual",
+          id: "annual", 
           name: "Annual",
           inspectionGroups: [
             {
@@ -483,6 +628,10 @@ const FaultSubmissionForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setShowConfirmation(true);
+  };
+
+  const handleConfirmSubmit = async () => {
     const url = "http://localhost:3000/api/v1/faults";
     const faultData = {
       vehicleId: selectedVehicle,
@@ -498,11 +647,26 @@ const FaultSubmissionForm = () => {
       setShowTimelineSelection(false);
       setSelectedTimelines([]);
       setSelectedVehicle("");
+      setShowConfirmation(false);
       toast.success("Fault submission successful!");
     } catch (error) {
       toast.error("Error submitting faults: " + error.message);
     }
   };
+
+  // Group faults by their inspection group
+  const groupedFaults = useMemo(() => {
+    if (!selectedVehicle || selectedFaults.length === 0) return [];
+    
+    const groups = {};
+    combinedInspectionGroups.forEach(group => {
+      const groupFaults = group.items.filter(item => selectedFaults.includes(item.id));
+      if (groupFaults.length > 0) {
+        groups[group.title] = groupFaults;
+      }
+    });
+    return groups;
+  }, [selectedVehicle, selectedFaults, combinedInspectionGroups]);
 
   const handleBack = () => {
     if (showFaultSelection) {
@@ -523,17 +687,20 @@ const FaultSubmissionForm = () => {
       
       {!showTimelineSelection && (
         <div className="vehicle-selection">
-          <h1 className="form-title">Select Vehicle</h1>
+          <h1 className="vehicle-selection-title">Select Vehicle Type</h1>
+          <p className="vehicle-selection-subtitle">Choose the vehicle type you want to perform maintenance on</p>
           <div className="vehicle-grid">
-            {Object.entries(vehicleData).map(([vehicleKey, vehicle]) => (
-              <button
-                key={vehicleKey}
-                className={`vehicle-button ${selectedVehicle === vehicleKey ? 'selected' : ''}`}
-                onClick={() => handleVehicleSelect(vehicleKey)}
-              >
-                {vehicle.name}
-              </button>
-            ))}
+            {Object.entries(vehicleData)
+              .sort(([, a], [, b]) => a.name.localeCompare(b.name))
+              .map(([vehicleKey, vehicle]) => (
+                <button
+                  key={vehicleKey}
+                  className={`vehicle-button ${selectedVehicle === vehicleKey ? 'selected' : ''}`}
+                  onClick={() => handleVehicleSelect(vehicleKey)}
+                >
+                  {vehicle.name}
+                </button>
+              ))}
           </div>
           <button 
             className="next-button"
@@ -546,6 +713,7 @@ const FaultSubmissionForm = () => {
       {showTimelineSelection && !showFaultSelection && (
         <div className="timeline-selection">
           <h1 className="form-title">Select Maintenance Timeline(s)</h1>
+          <p className="timeline-selection-title">Select one or more timelines to perform maintenance on</p>
           <div className="timeline-grid">
             {Object.values(vehicleData[selectedVehicle].timelines).map((timeline) => (
               <button
@@ -564,24 +732,24 @@ const FaultSubmissionForm = () => {
             className="next-button"
             onClick={handleNextFromTimeline}
           >
-            Start Maintenance Check
+            Start PMCS
           </button>
         </div>
       )}
       {showFaultSelection && (
-        <form className="fault-submission-form" onSubmit={handleSubmit}>
+      <form className="fault-submission-form" onSubmit={handleSubmit}>
           <div className="vehicle-id-box">
             <div>Vehicle: {vehicleData[selectedVehicle].name}</div>
             <div className="timeline-info">
               Maintenance: {selectedTimelines.map(t => vehicleData[selectedVehicle].timelines[t].name).join(" + ")}
             </div>
           </div>
-          <h1 className="form-title">PMCS Walkthrough</h1>
+        <h1 className="form-title">PMCS Walkthrough</h1>
           <div className="fault-selection-container">
             <div className="inspection-groups">
               {combinedInspectionGroups.map((group, groupIndex) => (
                 <div key={groupIndex} className="inspection-group">
-                  <h3 className="group-title">{group.title}</h3>
+              <h3 className="group-title">{group.title}</h3>
                   {group.disclaimers && group.disclaimers.map((disclaimer, index) => (
                     <div key={index} className="group-disclaimer">
                       {disclaimer}
@@ -591,33 +759,102 @@ const FaultSubmissionForm = () => {
                     <div key={item.id} className="inspection-item">
                       <label className="item-label">
                         <div className="item-header">
-                          <input
-                            type="checkbox"
+                  <input
+                    type="checkbox"
                             checked={selectedFaults.includes(item.id)}
                             onChange={() => handleCheckboxChange(item.id)}
                           />
-                          <span className="item-letter">{String.fromCharCode(97 + itemIndex)}.</span>
+                          <span className="item-letter">
+                            {item.id.includes('_e1') ? 'e.1' : 
+                             item.id.includes('_f') ? 'f' : 
+                             item.id.includes('_g') ? 'g' : 
+                             item.id.includes('_d1') ? 'd.1' :
+                             item.id.includes('_d') ? 'd' :
+                             item.id.includes('_e') ? 'e' : 
+                             item.id.includes('_a') ? 'a' : 
+                             item.id.includes('_b') ? 'b' : 
+                             item.id.includes('_c') ? 'c' : 
+                             item.id.includes('_h') ? 'h' : 
+                             item.id.includes('_i') ? 'i' : 
+                             item.id.includes('_j') ? 'j' :
+                             item.id.includes('_k') ? 'k' :
+                             item.id.includes('_l') ? 'l' :
+                             item.id.includes('_m') ? 'm' :
+                             item.id.includes('_n') ? 'n' :
+                             item.id.includes('_o') ? 'o' :
+                             item.id.includes('_p') ? 'p' :
+                             String.fromCharCode(97 + itemIndex)}
+                          </span>
                         </div>
                         <div className="item-content">
                           <div className="procedure" dangerouslySetInnerHTML={{ __html: item.procedure }}></div>
                           {item.criteria && (
                             <div className="criteria">
-                              <span className="criteria-label">Not fully mission capable if: </span>
-                              {item.criteria.replace("Not fully mission capable if: ", "")}
+                              <span className="criteria-label">NOT FULLY MISSION CAPABLE IF: </span>
+                              {item.criteria.replace("NOT FULLY MISSION CAPABLE IF: ", "")}
+                            </div>
+                          )}
+                          {item.image && (
+                            <div className="item-image">
+                              <img src={item.image} alt={`Illustration for ${item.procedure}`} />
                             </div>
                           )}
                         </div>
-                      </label>
+                </label>
                     </div>
-                  ))}
-                </div>
               ))}
             </div>
+          ))}
+            </div>
+        </div>
+        <button type="submit" className="form-submit">
+          Verify and Submit
+        </button>
+      </form>
+      )}
+      
+      {showConfirmation && (
+        <div className="modal-overlay">
+          <div className="confirmation-modal">
+            <h2 className="modal-title">Confirm PMCS Submission</h2>
+            <div className="modal-content">
+              <div className="modal-vehicle-info">
+                <div className="vehicle-name">{vehicleData[selectedVehicle].name}</div>
+                <div>Maintenance: {selectedTimelines.map(t => vehicleData[selectedVehicle].timelines[t].name).join(" + ")}</div>
+                <div>Total Issues: {selectedFaults.length}</div>
+                <div className="modal-username">Submitted by: {username || 'Not logged in'}</div>
+              </div>
+              
+              <div className="modal-faults">
+                {Object.entries(groupedFaults).map(([groupTitle, faults]) => (
+                  <div key={groupTitle} className="modal-fault-group">
+                    <h3 className="modal-fault-group-title">{groupTitle}</h3>
+                    {faults.map(fault => (
+                      <div key={fault.id} className="modal-fault-item">
+                        <div className="procedure" dangerouslySetInnerHTML={{ __html: fault.procedure }}></div>
+                        {fault.criteria && (
+                          <div className="criteria">
+                            <span className="criteria-label">NOT FULLY MISSION CAPABLE IF: </span>
+                            {fault.criteria.replace("NOT FULLY MISSION CAPABLE IF: ", "")}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+
+              <div className="modal-buttons">
+                <button className="modal-button modal-cancel" onClick={() => setShowConfirmation(false)}>
+                  Cancel
+                </button>
+                <button className="modal-button modal-confirm" onClick={handleConfirmSubmit}>
+                  Confirm Submission
+                </button>
+              </div>
+            </div>
           </div>
-          <button type="submit" className="form-submit">
-            Verify and Submit
-          </button>
-        </form>
+        </div>
       )}
     </div>
   );
