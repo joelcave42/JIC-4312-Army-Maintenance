@@ -42,6 +42,19 @@ Develop a web and mobile application that allows operators to log vehicle defici
 - Advanced Troubleshooting: Develop deeper integration for identifying parts and actions based on fault analysis.
 
 # Release Notes
+## Version 0.2.0 Release Notes
+
+### New Features
+- Implemented a role-specific home screen for all users to be directed to upon log in
+- Implemented a supervisor dashboard to track maintenance tasks
+- Implemented supervisor account authorization functionality
+- Refactored log in and sign up UI
+- Added copyright information and NOTICE file for attributions
+
+### Bug Fixes
+- Fixed bug where operators and maintainers were unable to see buttons
+- Removed unnecessary schema and backend code for "people"
+
 ## Version 0.1.0 Release Notes
 
 ### New Features

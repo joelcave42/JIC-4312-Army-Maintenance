@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
+// Required schema for account objects
 const AccountSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
     password: { type: String, required: true },
@@ -40,6 +41,7 @@ AccountSchema.statics.createUser = async function (supervisorId, userDetails) {
     return await newUser.save();
 };
 
+// Static method for supervisor to activate a user
 AccountSchema.statics.activateUser = async function (supervisorId, userId) {
     const supervisor = await this.findById(supervisorId);
     if (!supervisor || supervisor.accountType !== 'supervisor') {

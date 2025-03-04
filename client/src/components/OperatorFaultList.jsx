@@ -2,39 +2,37 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../styles/FaultList.css";
-import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
-const url = "http://localhost:3000/api/v1/faults/completed"; // Updated URL to fetch completed faults data
-
-const CompletedFaultList = () => {
+const OperatorFaultList = () => {
   const navigate = useNavigate();
-  const [completedFaults, setCompletedFaults] = useState([]);
-  const { statusListener } = useSelector((state) => state.globalValues);
+  const [faults, setFaults] = useState([]);
+  const username = localStorage.getItem("username");
 
-  // Fetch corrected faults to display on dashboard
-  const fetchCompletedFaults = async () => {
+  const fetchFaults = async () => {
     try {
-      const response = await axios.get(url);
-      setCompletedFaults(response.data.faults);
+      const response = await axios.get(`http://localhost:3000/api/v1/faults/operator/${username}`);
+      setFaults(response.data.faults);
     } catch (error) {
       console.error(error);
+      toast.error("Failed to fetch your faults");
     }
   };
 
   useEffect(() => {
-    fetchCompletedFaults();
-  }, [statusListener]);
+    fetchFaults();
+  }, []);
 
   return (
     <div className="fault-list-main">
       <button className="back-button" onClick={() => navigate("/home")}>Back</button>
       <div>
-        <h2>Corrected Faults:</h2>
+        <h2>Your Fault Submissions</h2>
         <div className="fault-items">
-          {completedFaults.map((fault) => (
+          {faults.map((fault) => (
             <div key={fault._id} className="fault-item">
               <p className="vehicle-id">Vehicle ID: {fault.vehicleId}</p>
-              <p className="fault-issues">Resolved Issues:</p>
+              <p className="fault-issues">Issues:</p>
               <ul className="issues-list">
                 {fault.issues.map((issue, index) => (
                   <li key={index} className="issue-item">
@@ -42,6 +40,7 @@ const CompletedFaultList = () => {
                   </li>
                 ))}
               </ul>
+              <p>Status: {fault.status}</p>
             </div>
           ))}
         </div>
@@ -50,4 +49,4 @@ const CompletedFaultList = () => {
   );
 };
 
-export default CompletedFaultList;
+export default OperatorFaultList;

@@ -626,6 +626,7 @@ const FaultSubmissionForm = () => {
     );
   };
 
+  // Adds submitted faults to the total fault and pending fault lists
   const handleSubmit = async (e) => {
     e.preventDefault();
     setShowConfirmation(true);
@@ -637,6 +638,7 @@ const FaultSubmissionForm = () => {
       vehicleId: selectedVehicle,
       timelines: selectedTimelines,
       issues: selectedFaults,
+      createdBy: localStorage.getItem("username"),
     };
 
     try {
