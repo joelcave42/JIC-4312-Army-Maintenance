@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   inputValues: { name: "", email: "", password: "" },
   statusListener: false,
+  username: localStorage.getItem("username") || "",
 };
 
 const globalSlice = createSlice({
@@ -24,6 +25,9 @@ const globalSlice = createSlice({
     changeStatusListener: (state) => {
       state.statusListener = !state.statusListener;
     },
+    setUsername: (state, action) => {
+      state.username = action.payload;
+    },
   },
 });
 
@@ -34,6 +38,7 @@ export const {
   updateEmailInputValue,
   updatePasswordInputValue,
   changeStatusListener,
+  setUsername,
 } = globalSlice.actions;
 
 export default globalSlice.reducer;
