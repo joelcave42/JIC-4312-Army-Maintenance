@@ -22,22 +22,34 @@ function LoginPage({ onLogin }) {
     setLoading(true); // Indicate loading
 
     try {
-      // Make API call to backend
+      console.log('Attempting login with username:', username);
       const response = await axios.post('http://localhost:3000/api/v1/accounts/login', {
         username,
         password,
       });
 
-      // Handle success
+      console.log('Login response:', response.data);
+
       if (response.data.success) {
         console.log('Login successful:', response.data);
         localStorage.setItem("username", username);
-        dispatch(setUsername(username)); // Dispatch username to Redux store
-        onLogin(response.data); // Pass the logged-in user data to parent component
+        dispatch({
+          type: 'globalValues/setUsername',
+          payload: username
+        });
+        onLogin(response.data);
+      } else {
+        console.error('Login failed:', response.data);
+        setError(response.data.message || 'Login failed. Please check your credentials.');
       }
     } catch (err) {
-      // Handle errors
-      setError(err.response?.data?.message || 'An error occurred. Please try again.');
+      console.error('Login error:', err);
+      console.error('Error response:', err.response);
+      setError(
+        err.response?.data?.message || 
+        err.message || 
+        'An error occurred. Please try again.'
+      );
     } finally {
       setLoading(false); // Stop loading
     }
