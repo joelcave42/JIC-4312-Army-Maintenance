@@ -20,14 +20,14 @@ const ClaimedFaults = () => {
       
       // Filter only the faults that are claimed AND claimedBy the current maintainer
       const claimed = response.data.faults.filter((fault) => {
-        const isClaimed = Array.isArray(fault.status)
-          ? fault.status.includes("claimed")
-          : fault.status === "claimed";
-  
+        const isNotCompleted = Array.isArray(fault.status)
+            ? !fault.status.includes("completed")
+            : fault.status !== "completed";
         const isClaimedByMe = fault.claimedBy === maintainerID;
-        return isClaimed && isClaimedByMe;
+
+        return fault.isClaimed && isNotCompleted && isClaimedByMe;
       });
-  
+
       setFaults(claimed);
     } catch (error) {
       console.error(error);
@@ -40,6 +40,33 @@ const ClaimedFaults = () => {
       setFaults((prevFaults) => prevFaults.filter((fault) => fault._id !== id));
       store.dispatch(changeStatusListener());
       toast.success("Fault successfully deleted");
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+  const markFaultInProgress = async (id) => {
+    try {
+      console.log("Marking fault in progress with ID:", id);
+      console.log(`Send PATCH request to: http://localhost:3000/api/v1/faults/${id}/in-progress`);
+      
+      await axios.patch(`http://localhost:3000/api/v1/faults/${id}/in-progress`);
+      
+      store.dispatch(changeStatusListener());
+      toast.success("Fault marked as in progress");
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  const markFaultAwaitingPart = async (id) => {
+    try {
+      console.log("Marking fault awaiting part with ID:", id);
+      console.log(`Send PATCH request to: http://localhost:3000/api/v1/faults/${id}/awaiting-part`);
+      
+      await axios.patch(`http://localhost:3000/api/v1/faults/${id}/awaiting-part`);
+      
+      store.dispatch(changeStatusListener());
+      toast.success("Fault marked as awaiting part");
     } catch (error) {
       toast.error(error.message);
     }
@@ -82,6 +109,7 @@ const ClaimedFaults = () => {
               faults.map((fault) => (
                 <div key={fault._id} className="fault-item">
                   <p className="vehicle-id">Vehicle ID: {fault.vehicleId}</p>
+                  <p className="fault-status"><strong>Status:</strong> {fault.status}</p>
                   <p className="fault-issues">Issues:</p>
                   <ul className="issues-list">
                     {fault.issues.map((issue, index) => (
@@ -103,6 +131,22 @@ const ClaimedFaults = () => {
                     >
                       Fault Corrected
                     </button>
+                    {fault.status === "pending" && (
+                        <button
+                            onClick={() => markFaultInProgress(fault._id)}
+                            className="status-btn"
+                        >
+                            Mark In Progress
+                        </button> 
+                    )}
+                    {fault.status === "in progress" && (
+                        <button
+                            onClick={() => markFaultAwaitingPart(fault._id)}
+                            className="status-btn"
+                        >
+                            Mark Awaiting Part
+                        </button>
+                    )}
                   </div>
                 </div>
               ))

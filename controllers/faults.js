@@ -72,6 +72,40 @@ const updateFault = async (req, res) => {
     }
 };
 
+const markFaultInProgress = async (req, res) => {
+    try{
+        const { id: faultID } = req.params;
+        const updatedFault = await Fault.findByIdAndUpdate(
+            faultID,
+            { status: "in progress" },
+            { new: true }
+        );
+        if (!updatedFault) {
+            return res.status(404).json({ msg: `Fault with ID ${faultID} doesn't exist`});
+        }
+        res.status(200).json({ updateFault });
+    } catch (error) {
+        res.status(500).json({ message: `Error marking fault as corrected: ${error.message}` });
+    }
+}
+
+const markFaultAwaitingPart = async (req, res) => {
+    try{
+        const { id: faultID } = req.params;
+        const updatedFault = await Fault.findByIdAndUpdate(
+            faultID,
+            { status: "awaiting part" },
+            { new: true }
+        );
+        if (!updatedFault) {
+            return res.status(404).json({ msg: `Fault with ID ${faultID} doesn't exist`});
+        }
+        res.status(200).json({ updateFault });
+    } catch (error) {
+        res.status(500).json({ message: `Error marking fault as corrected: ${error.message}` });
+    }
+}
+
 // Mark fault corrected by object ID
 const markFaultCorrected = async (req, res) => {
     try{
@@ -113,7 +147,7 @@ const claimFault = async (req, res) => {
       console.log("maintainerID: ", maintainerID);
   
       const updatedFault = await Fault.findByIdAndUpdate(faultID, 
-        { status: "claimed", claimedBy: maintainerID }, 
+        { isClaimed: true, claimedBy: maintainerID }, 
         { new: true }
     );
     if (!updatedFault) {
@@ -145,6 +179,8 @@ module.exports = {
     addFault,
     getFault,
     updateFault,
+    markFaultInProgress,
+    markFaultAwaitingPart,
     markFaultCorrected,
     deleteFault,
     claimFault,
