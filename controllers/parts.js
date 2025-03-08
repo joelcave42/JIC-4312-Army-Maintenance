@@ -73,14 +73,10 @@ const markAsArrived = async (req, res) => {
     const order = await PartOrder.findById(id);
 
     if (!order) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Order not found" });
+      return res.status(404).json({ success: false, message: "Order not found" });
     }
     if (order.status === "ARRIVED") {
-      return res
-        .status(400)
-        .json({ success: false, message: "Order already marked as arrived" });
+      return res.status(400).json({ success: false, message: "Order already marked as arrived" });
     }
 
     order.status = "ARRIVED";
@@ -98,43 +94,51 @@ const markAsArrived = async (req, res) => {
 };
 
 /**
- * Get all ARRIVED parts belonging to the operator’s faults.
- * No time-based filtering here—returns *all* arrived parts.
- * Endpoint: GET /api/v1/parts/arrived-operator/:operatorUsername
+ * Get all ARRIVED parts belonging to the operator’s faults, *filtered* by ?since=...
+ * Endpoint: GET /api/v1/parts/arrived-operator/:username
+ *
+ * Example: /api/v1/parts/arrived-operator/operatorName?since=2025-03-08T02:00:00.000Z
+ * - finds all Faults with createdBy=operatorName
+ * - then finds PartOrders with { status: "ARRIVED", arrivedAt > since }
  */
 const getArrivedPartsForOperator = async (req, res) => {
-    try {
-      console.log("Debug: In getArrivedPartsForOperator");
-      const operatorUsername = req.params.username; // must match :username in routes
-      console.log("Debug: operatorUsername =", operatorUsername);
-  
-      // No more time filter. We'll see all arrived parts.
-      const faults = await Fault.find({ createdBy: operatorUsername }, { _id: 1 });
-      console.log("Debug: Found fault IDs:", faults); // Show the array
-  
-      const faultIds = faults.map((f) => f._id);
-      if (faultIds.length === 0) {
-        console.log("Debug: No faults for this user => returning empty");
-        return res.json({ success: true, data: [] });
-      }
-  
-      // Show the filter
-      const filter = {
-        fault: { $in: faultIds },
-        status: "ARRIVED",
-      };
-      console.log("Debug: filter =", filter);
-  
-      const arrivedParts = await PartOrder.find(filter).populate("fault");
-      console.log("Debug: found arrivedParts =>", arrivedParts);
-  
-      return res.json({ success: true, data: arrivedParts });
-    } catch (error) {
-      console.error("Error in getArrivedPartsForOperator:", error);
-      return res.status(500).json({ success: false, message: error.message });
+  try {
+    console.log("Debug: In getArrivedPartsForOperator");
+    const operatorUsername = req.params.username;
+    const { since } = req.query;
+
+    // 1) Find all faults created by this operator (username-based)
+    const faults = await Fault.find({ createdBy: operatorUsername }, { _id: 1 });
+    console.log("Debug: Found fault IDs:", faults);
+
+    const faultIds = faults.map((f) => f._id);
+    if (faultIds.length === 0) {
+      // no faults => no arrived parts
+      return res.json({ success: true, data: [] });
     }
-  };
-  
+
+    // 2) Build the filter for arrived parts
+    const filter = {
+      fault: { $in: faultIds },
+      status: "ARRIVED",
+    };
+
+    // If "since" is provided, only show parts that arrived after that time
+    if (since) {
+      console.log("Debug: Using arrivedAt > ", since);
+      filter.arrivedAt = { $gt: new Date(since) };
+    }
+
+    // 3) Query PartOrder
+    const arrivedParts = await PartOrder.find(filter).populate("fault");
+    console.log("Debug: found arrivedParts =>", arrivedParts);
+
+    return res.json({ success: true, data: arrivedParts });
+  } catch (error) {
+    console.error("Error in getArrivedPartsForOperator:", error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
 
 module.exports = {
   createPartOrder,

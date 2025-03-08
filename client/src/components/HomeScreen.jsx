@@ -16,31 +16,31 @@ const HomeScreen = ({ userType }) => {
 
   const fetchNewArrivals = async () => {
     try {
-      // 1️⃣ Use the username instead of userID
+      // Operator's username from localStorage
       const operatorUsername = localStorage.getItem("username");
       console.log("Debug: operatorUsername from localStorage:", operatorUsername);
-
       if (!operatorUsername) {
         console.log("Debug: No operatorUsername found, skipping fetchNewArrivals.");
         return;
       }
 
-      // 2️⃣ Optionally handle "lastLoginTime" if you want only new arrivals
-      const lastLoginTime = localStorage.getItem("lastLoginTime");
-      console.log("Debug: lastLoginTime:", lastLoginTime);
+      // Read lastSeenArrivalTime
+      const lastSeenArrivalTime = localStorage.getItem("lastSeenArrivalTime");
+      console.log("Debug: lastSeenArrivalTime:", lastSeenArrivalTime);
 
-      const sinceParam = lastLoginTime ? `?since=${lastLoginTime}` : "";
-      // 3️⃣ Build the URL using the username, not the ID
-      const url = `http://localhost:3000/api/v1/parts/arrived-operator/${operatorUsername}`;
+      // If we have a lastSeenArrivalTime, append ?since=...
+      const sinceParam = lastSeenArrivalTime ? `?since=${lastSeenArrivalTime}` : "";
+      const url = `http://localhost:3000/api/v1/parts/arrived-operator/${operatorUsername}${sinceParam}`;
       console.log("Debug: Final GET URL:", url);
 
-      // 4️⃣ Fetch arrived parts
+      // Fetch arrived parts from the server
       const response = await axios.get(url);
       console.log("Debug: Response data from server:", response.data);
 
       if (response.data.success) {
         const parts = response.data.data;
         console.log("Debug: Number of arrived parts found:", parts.length);
+
         if (parts.length > 0) {
           setArrivedParts(parts);
           setShowBanner(true);
@@ -56,9 +56,10 @@ const HomeScreen = ({ userType }) => {
 
   const handleDismiss = () => {
     setShowBanner(false);
-    console.log("Debug: Banner dismissed. Updating lastLoginTime to now.");
-    // Update 'lastLoginTime' so we won't show these arrivals again
-    localStorage.setItem("lastLoginTime", new Date().toISOString());
+    console.log("Debug: Banner dismissed. Updating lastSeenArrivalTime to now.");
+
+    // Set lastSeenArrivalTime to "now" so we won't see these parts again
+    localStorage.setItem("lastSeenArrivalTime", new Date().toISOString());
   };
 
   return (
@@ -78,7 +79,8 @@ const HomeScreen = ({ userType }) => {
           <ul>
             {arrivedParts.map((part) => (
               <li key={part._id}>
-                Part "{part.partName}" arrived for Fault #{part.fault?._id?.toString().slice(-4)}
+                Part "{part.partName}" arrived for Fault #
+                {part.fault?._id?.toString().slice(-4)}
               </li>
             ))}
           </ul>
