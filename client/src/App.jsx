@@ -21,6 +21,7 @@ import { setUsername } from "./features/globalValues/globalSlice";
 import ClaimFaults from "./components/ClaimFaults";
 import ClaimedFaults from "./components/ClaimedFaults";
 import OperatorFaultList from "./components/OperatorFaultList";
+import OrderedParts from "./components/OrderedParts";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -66,6 +67,7 @@ function App() {
     setIsLoggedIn(true);
     fetchUserType();
     localStorage.setItem("isLoggedIn", "true");
+    localStorage.setItem("lastLoginTime", new Date().toISOString());
   };
 
   // Provides functionality for user to log out
@@ -129,6 +131,12 @@ function App() {
               {userType === "supervisor" && (
                 <Route path="/supervisor-dashboard" element={<SupervisorDashboard />} />
               )}
+
+              {/*Clerk Only Route */}
+              {userType === "clerk" && (
+                <Route path="/Ordered-Parts" element={<OrderedParts />} />
+              )}
+
 
               <Route path="*" element={<Navigate to="/home" replace />} />
             </>

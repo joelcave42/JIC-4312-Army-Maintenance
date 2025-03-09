@@ -18,6 +18,9 @@ const Menu = ({ userType }) => {
           <button onClick={() => navigate("/fault-list")}>
             Check Reported Faults
           </button>
+          <button onClick={() => navigate("/ordered-parts")}>
+            Ordered Parts
+          </button> {/* New button for part ordering */}
         </>
       )}
 
@@ -38,7 +41,7 @@ const Menu = ({ userType }) => {
       {normalizedUserType === "manager" && (
         <>
           <button onClick={() => navigate("/fault-submission")}>
-            Start 5988
+            
           </button>
           <button onClick={() => navigate("/fault-list")}>
             Check Reported Faults
@@ -55,7 +58,7 @@ const Menu = ({ userType }) => {
             Check All Reported Faults
           </button>
           <button onClick={() => navigate("/operator-faults")}>
-            My Fault Submissions 
+            My Fault Submissions & Parts
           </button>  
         </>
       )}

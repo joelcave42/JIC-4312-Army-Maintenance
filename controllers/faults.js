@@ -128,14 +128,30 @@ const markFaultCorrected = async (req, res) => {
 // Delete fault by object ID
 const deleteFault = async (req, res) => {
     const { id: faultID } = req.params;
+    const { userID } = req.body;
     try {
-        const fault = await Fault.findByIdAndDelete(faultID);
-        if (!fault) {
+        const updatedFault = await Fault.findByIdAndUpdate(
+            faultID,
+            {
+                status: "deleted",
+                deletedAt: new Date().toISOString(),
+                deletedBy: userID,
+                isClaimed: false,
+                claimedBy: null
+            },
+            { 
+                new: true,
+                select: 'vehicleId issues status maintainerComment isClaimed claimedBy createdAt deletedAt deletedBy'
+            }
+        );
+
+        if (!updatedFault) {
             return res.status(404).json({ msg: `No fault with id ${faultID} found` });
         }
-        res.status(200).json({ msg: "Fault successfully deleted" });
+
+        res.status(200).json({ fault: updatedFault });
     } catch (error) {
-        res.status(500).json({ msg: `Error deleting fault: ${error.message}` });
+        res.status(500).json({ msg: `Error marking fault as deleted: ${error.message}` });
     }
 };
 
@@ -163,14 +179,43 @@ const claimFault = async (req, res) => {
 const getOperatorFaults = async (req, res) => {
     try {
         const { username } = req.params;
-        const faults = await Fault.find({ createdBy: username });
+        const faults = await Fault.find({ createdBy: username })
+            .select('vehicleId issues status maintainerComment isClaimed claimedBy createdAt deletedAt deletedBy')
+            .sort({ createdAt: -1 });
+        
+        console.log('Operator faults:', faults);
+        
         res.status(200).json({ faults, count: faults.length });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
-
+const addFaultComment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { comment } = req.body;
+    
+    if (!comment) {
+      return res.status(400).json({ msg: 'Comment is required' });
+    }
+    
+    const updatedFault = await Fault.findByIdAndUpdate(
+      id,
+      { maintainerComment: comment },
+      { new: true }
+    );
+    
+    if (!updatedFault) {
+      return res.status(404).json({ msg: 'Fault not found' });
+    }
+    
+    res.status(200).json({ fault: updatedFault });
+  } catch (error) {
+    console.error('Error updating fault comment:', error);
+    res.status(500).json({ msg: 'Server error' });
+  }
+};
 
 module.exports = {
     getAllFaults,
@@ -185,4 +230,5 @@ module.exports = {
     deleteFault,
     claimFault,
     getOperatorFaults,
+    addFaultComment,
 };
