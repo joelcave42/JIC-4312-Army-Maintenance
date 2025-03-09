@@ -12,7 +12,7 @@ const FaultSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ["pending","in progress", "awaiting part", "completed"],
+        enum: ["pending","in progress", "awaiting part", "completed", "deleted"],
         default: "pending",
     },
     customIssue: {
@@ -39,6 +39,18 @@ const FaultSchema = new mongoose.Schema({
     comments: {
         type: String,
         required: false
+    },
+    maintainerComment: {
+        type: String,
+        default: ''
+    },
+    deletedAt: {
+        type: Date,
+        default: null
+    },
+    deletedBy: {
+        type: String,
+        default: null
     }
 });
 

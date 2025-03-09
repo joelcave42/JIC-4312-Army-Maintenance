@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import "../styles/OrderedParts.css";
 
 const OrderedParts = () => {
+  const navigate = useNavigate();
   const [allParts, setAllParts] = useState([]);
   const [message, setMessage] = useState("");
 
@@ -16,10 +20,10 @@ const OrderedParts = () => {
       if (data.success) {
         setAllParts(data.data);
       } else {
-        console.error("Error fetching parts:", data.message);
+        toast.error("Error fetching parts");
       }
     } catch (error) {
-      console.error("Failed to fetch parts:", error);
+      toast.error("Failed to fetch parts");
     }
   };
 
@@ -45,64 +49,79 @@ const OrderedParts = () => {
   
         // Use the found part's name in the message
         if (foundPart) {
-          setMessage(`"${foundPart.partName}" marked as arrived!`);
+          toast.success(`"${foundPart.partName}" marked as arrived!`);
         }
       } else {
-        console.error("Error marking part as arrived:", data.message);
+        toast.error("Error marking part as arrived");
       }
     } catch (error) {
-      console.error("Failed to mark part as arrived:", error);
+      toast.error("Failed to mark part as arrived");
     }
   };
   
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+    return new Date(dateString).toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
 
   return (
-    <div style={{ maxWidth: 600, margin: "0 auto", padding: 20 }}>
-      <h2>All Ordered Parts</h2>
-      {message && <p style={{ color: "green" }}>{message}</p>}
-      <hr />
+    <div className="ordered-parts-container">
+      <button className="back-button" onClick={() => navigate("/home")}>
+        Back
+      </button>
+      
+      <h2 className="ordered-parts-title">All Ordered Parts</h2>
 
-      {allParts.length > 0 ? (
-        <ul>
-          {allParts.map((part) => {
-            const orderedAt = part.orderedAt
-              ? new Date(part.orderedAt).toLocaleString()
-              : "N/A";
-            const arrivedAt = part.arrivedAt
-              ? new Date(part.arrivedAt).toLocaleString()
-              : null;
+      <div className="parts-grid">
+        {allParts.length === 0 ? (
+          <p className="no-parts">No parts found.</p>
+        ) : (
+          allParts.map((part) => (
+            <div key={part._id} className={`part-card ${part.status.toLowerCase()}`}>
+              <div className="part-header">
+                <h3 className="part-name">{part.partName}</h3>
+                <span className={`status-badge ${part.status.toLowerCase()}`}>
+                  {part.status}
+                </span>
+              </div>
 
-            return (
-              <li key={part._id} style={{ margin: "10px 0" }}>
-                <strong>{part.partName}</strong> (Qty: {part.quantity})
-                <br />
-                Status:{" "}
-                {part.status === "ORDERED" ? (
-                  <span style={{ color: "#ffa500" }}>ORDERED</span>
-                ) : (
-                  <span style={{ color: "green" }}>ARRIVED</span>
+              <div className="part-details">
+                <div className="detail-row">
+                  <span className="detail-label">Quantity:</span>
+                  <span className="detail-value">{part.quantity}</span>
+                </div>
+
+                <div className="detail-row">
+                  <span className="detail-label">Ordered:</span>
+                  <span className="detail-value">{formatDate(part.orderedAt)}</span>
+                </div>
+
+                {part.arrivedAt && (
+                  <div className="detail-row">
+                    <span className="detail-label">Arrived:</span>
+                    <span className="detail-value">{formatDate(part.arrivedAt)}</span>
+                  </div>
                 )}
-                <br />
-                Ordered At: {orderedAt}
-                {arrivedAt && <div>Arrived At: {arrivedAt}</div>}
+              </div>
 
-                {/* If it's still ORDERED, show button. Otherwise, show arrivedAt */}
-                {part.status === "ORDERED" && (
-                  <button
-                    onClick={() => markAsArrived(part._id)}
-                    style={{ marginTop: 8 }}
-                  >
-                    Mark as Arrived
-                  </button>
-                )}
-                <hr />
-              </li>
-            );
-          })}
-        </ul>
-      ) : (
-        <p>No parts found.</p>
-      )}
+              {part.status === "ORDERED" && (
+                <button
+                  className="arrive-button"
+                  onClick={() => markAsArrived(part._id)}
+                >
+                  Mark as Arrived
+                </button>
+              )}
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 };

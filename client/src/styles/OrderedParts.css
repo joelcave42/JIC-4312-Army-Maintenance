@@ -1,0 +1,167 @@
+.ordered-parts-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.ordered-parts-title {
+  color: white;
+  margin-bottom: 30px;
+  text-align: center;
+  font-size: 2rem;
+}
+
+.back-button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  transition: background-color 0.3s;
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.back-button:hover {
+  background-color: #45a049;
+}
+
+.parts-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+  padding: 20px 0;
+  margin: 0 auto;
+}
+
+.part-card {
+  background: #2a362a;
+  border-radius: 10px;
+  padding: 20px;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+  min-height: 250px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.part-card:hover {
+  transform: translateY(-2px);
+}
+
+.part-card.arrived {
+  background: #2a362a;
+  border: 1px solid #4CAF50;
+}
+
+.part-card.ordered {
+  background: #2a362a;
+  border: 1px solid #FFA500;
+}
+
+.part-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15px;
+  gap: 10px;
+}
+
+.part-name {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  flex: 1;
+}
+
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.status-badge.ordered {
+  background-color: #FFA500;
+  color: black;
+}
+
+.status-badge.arrived {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.part-details {
+  margin: 15px 0;
+  flex-grow: 1;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 8px 0;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.detail-label {
+  color: #ccc;
+  font-weight: 500;
+}
+
+.detail-value {
+  color: white;
+  text-align: right;
+  margin-left: 10px;
+}
+
+.arrive-button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 15px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.arrive-button:hover {
+  background-color: #45a049;
+}
+
+.no-parts {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: white;
+  font-size: 1.1rem;
+  padding: 40px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1100px) {
+  .parts-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .parts-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .ordered-parts-container {
+    padding: 10px;
+  }
+  
+  .part-card {
+    margin: 10px 0;
+    min-height: 200px;
+  }
+} 

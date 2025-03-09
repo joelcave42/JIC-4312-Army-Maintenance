@@ -126,3 +126,64 @@
   transform: scale(1.05);
   background-color: #e6b813; /* Slightly darker gold */
 }
+
+.fault-status {
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.fault-status strong {
+  color: #ffc317;
+}
+
+.maintainer-comment {
+  margin: 10px 0;
+  padding: 8px;
+  background: rgba(255, 195, 23, 0.1);
+  border-radius: 4px;
+  border-left: 3px solid #ffc317;
+}
+
+.comment-label {
+  font-size: 14px;
+  font-weight: bold;
+  margin: 0 0 5px 0;
+  color: #ffc317;
+}
+
+.comment-content {
+  font-size: 14px;
+}
+
+/* Add these styles for deleted faults */
+.deleted-fault {
+    position: relative;
+    opacity: 0.8;
+    background: #2a362a;
+    border: 1px solid #a83232; /* Red border for deleted faults */
+}
+
+.deleted-banner {
+    background: rgba(168, 50, 50, 0.9); /* Semi-transparent red */
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.deleted-banner p {
+    margin: 0;
+    font-weight: bold;
+}
+
+.deleted-info {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+/* Disable buttons for deleted faults */
+.deleted-fault .fault-actions button {
+    opacity: 0.5;
+    pointer-events: none;
+}
