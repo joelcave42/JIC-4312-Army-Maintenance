@@ -42,6 +42,18 @@ Develop a web and mobile application that allows operators to log vehicle defici
 - Advanced Troubleshooting: Develop deeper integration for identifying parts and actions based on fault analysis.
 
 # Release Notes
+## Version 0.3.0 Release Notes
+
+### New Features
+- Implemented functionality to allow maintainers to claim faults as their own
+- Implemented functionality to allow maintainers to change the status of their claimed faults
+- Implemented a dashboard for operators to view faults on their vehicles
+- Implemented to part order process for supervisors to order and maintainers and operators to see ordered parts
+- Implemented the entire 5988 PMCS form process for two vehicles provided to us by our client
+
+### Bug Fixes
+- Fixed bug where user type was not displayed on login
+
 ## Version 0.2.0 Release Notes
 
 ### New Features
