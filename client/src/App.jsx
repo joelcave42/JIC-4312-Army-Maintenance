@@ -91,7 +91,7 @@ function App() {
         */}
         {isLoggedIn && (
           <div style={{ textAlign: "center", padding: "10px", color: "#ffd700" }}>
-            Logged in as: <strong>{userType}</strong>
+            Logged in as: <strong>{userType.charAt(0).toUpperCase() + userType.slice(1)}</strong>
           </div>
         )}
 
