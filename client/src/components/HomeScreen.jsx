@@ -69,7 +69,7 @@ const HomeScreen = ({ userType }) => {
       </h1>
       <h2>
         Will implement dashboard features in the future and decide which
-        functionalities need to be added here
+        functionalities would need to be added here.
       </h2>
 
       {/* Banner for newly arrived parts */}
