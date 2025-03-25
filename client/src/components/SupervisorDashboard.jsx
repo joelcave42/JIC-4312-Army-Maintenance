@@ -2,32 +2,29 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "../styles/SupervisorDashboard.css";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
-const url = "http://localhost:3000/api/v1/accounts/unapproved"; // URL to fetch unapproved accounts
+const url = "http://localhost:3000/api/v1/accounts/unapproved";
 
 const SupervisorDashboard = () => {
+  const navigate = useNavigate();
   const [accounts, setAccounts] = useState([]);
   const [isVisible, setIsVisible] = useState(false);
 
-  // Fetches all accounts that have not been approved by a supervisor
   const fetchUnapprovedAccounts = async () => {
     try {
       const response = await axios.get(url);
-      setAccounts(response.data.data || []); // Ensure we store an array
+      setAccounts(response.data.data || []);
     } catch (error) {
       console.error("Error fetching unapproved accounts:", error);
       toast.error("Failed to load unapproved accounts");
     }
   };
 
-  // Allows supervisors to approve accounts
   const approveAccount = async (userId) => {
     try {
       await axios.put(`http://localhost:3000/api/v1/accounts/approve/${userId}`);
-
-      // Remove the approved account from the list
-      setAccounts((prevAccounts) => prevAccounts.filter((account) => account._id !== userId));
-
+      setAccounts((prev) => prev.filter((account) => account._id !== userId));
       toast.success("Account successfully approved!");
     } catch (error) {
       console.error("Approval error:", error);
@@ -37,7 +34,7 @@ const SupervisorDashboard = () => {
 
   useEffect(() => {
     fetchUnapprovedAccounts();
-  }, []); // Fetch only on first render
+  }, []);
 
   const toggleVisibility = () => {
     setIsVisible(!isVisible);
@@ -45,12 +42,22 @@ const SupervisorDashboard = () => {
 
   return (
     <div className="supervisor-dashboard">
+      
+      <button className="back-button" onClick={() => navigate("/home")}>
+        Back
+      </button>
+  
+     
       <div style={{ display: "flex", justifyContent: "center", marginBottom: "20px" }}>
-        <button onClick={toggleVisibility} className="toggle-dashboard-button">
+        <button
+          onClick={toggleVisibility}
+          className="toggle-dashboard-button fixed-button-width"
+        >
           {isVisible ? "Hide Unapproved Accounts" : "Show Unapproved Accounts"}
         </button>
       </div>
-
+  
+   
       {isVisible && (
         <div>
           <h2>Unapproved Accounts:</h2>
@@ -61,9 +68,15 @@ const SupervisorDashboard = () => {
               accounts.map((account) => (
                 <div key={account._id} className="account-item">
                   <p className="account-username">Username: {account.username}</p>
-                  <p className="account-type">Account Type: {account.accountType.charAt(0).toUpperCase() + account.accountType.slice(1)}</p>
+                  <p className="account-type">
+                    Account Type:{" "}
+                    {account.accountType.charAt(0).toUpperCase() + account.accountType.slice(1)}
+                  </p>
                   <div className="account-actions">
-                    <button onClick={() => approveAccount(account._id)} className="approve-btn">
+                    <button
+                      onClick={() => approveAccount(account._id)}
+                      className="approve-btn"
+                    >
                       Approve
                     </button>
                   </div>
@@ -73,6 +86,16 @@ const SupervisorDashboard = () => {
           </div>
         </div>
       )}
+  
+   
+      <div style={{ display: "flex", justifyContent: "center", marginTop: "30px" }}>
+        <button
+          onClick={() => navigate("/assign-faults")}
+          className="toggle-dashboard-button fixed-button-width"
+        >
+          Claim Faults for Maintainers
+        </button>
+      </div>
     </div>
   );
 };
