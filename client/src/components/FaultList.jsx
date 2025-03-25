@@ -32,6 +32,9 @@ const FaultList = () => {
   const [partName, setPartName] = useState("");
   const [quantity, setQuantity] = useState(1);
 
+  const [recentlyDeletedFault, setRecentlyDeletedFault] = useState(null);
+  const [undoTimer, setUndoTimer] = useState(null);
+
   // Fetch pending faults to display on the dashboard
   const fetchFaults = async () => {
     try {
@@ -82,14 +85,38 @@ const FaultList = () => {
     }
   };
 
-  // Delete a fault
+
   const deleteFault = async (id) => {
     try {
-      await axios.delete(`${faultsUrl}/${id}`);
+      const response = await axios.delete(`${faultsUrl}/${id}`);
+      const deletedFault = response.data.fault;
+      setRecentlyDeletedFault(deletedFault);
+      
+      if (undoTimer) clearTimeout(undoTimer);
+      const timer = setTimeout(() => {
+        setRecentlyDeletedFault(null);
+      }, 10000);
+      setUndoTimer(timer);
+      
       store.dispatch(changeStatusListener());
-      toast.success("Fault successfully deleted");
+      toast.success("Fault successfully deleted. You have 10 seconds to undo.");
     } catch (error) {
       toast.error(error.message);
+    }
+  };
+
+  const undoDeleteFault = async (id) => {
+    try {
+      await axios.patch(`${faultsUrl}/${id}/undo-delete`);
+      store.dispatch(changeStatusListener());
+      toast.success("Fault restored successfully");
+      setRecentlyDeletedFault(null);
+      if (undoTimer) {
+        clearTimeout(undoTimer);
+        setUndoTimer(null);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.msg || "Failed to restore fault");
     }
   };
 
@@ -188,6 +215,43 @@ const FaultList = () => {
               <button onClick={handleCloseOrderModal}>Cancel</button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Undo Button for recently deleted fault */}
+      {recentlyDeletedFault && (
+        <div
+          className="undo-container"
+          style={{
+            margin: "20px auto",
+            padding: "10px",
+            background: "#f8d7da",
+            color: "#721c24",
+            border: "1px solid #f5c6cb",
+            borderRadius: "5px",
+            textAlign: "center",
+            width: "90%",
+            maxWidth: "600px",
+          }}
+        >
+          <p>
+            Fault has been deleted, but can be undone. Click below within 10 seconds to restore
+            the fault.
+          </p>
+          <button
+            className="undo-btn"
+            style={{
+              padding: "8px 16px",
+              background: "#c82333",
+              color: "#fff",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
+            }}
+            onClick={() => undoDeleteFault(recentlyDeletedFault._id)}
+          >
+            Undo
+          </button>
         </div>
       )}
     </div>
