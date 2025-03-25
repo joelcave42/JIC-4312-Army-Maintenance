@@ -32,7 +32,6 @@
   }
   
   .toggle-dashboard-button:hover {
-    transform: scale(1.05);
     background-color: #e6b813;
   }
   
@@ -78,7 +77,7 @@
   
   /* Approve Button */
   .approve-btn {
-    background: #28a745; /* Green for Approval */
+    background: #28a745; 
     color: white;
     padding: 8px 16px;
     border: none;
@@ -94,3 +93,7 @@
     transform: translateY(-2px);
   }
   
+  .fixed-button-width {
+    width: 260px;
+    max-width: 260px;
+  }

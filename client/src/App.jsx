@@ -22,6 +22,7 @@ import ClaimFaults from "./components/ClaimFaults";
 import ClaimedFaults from "./components/ClaimedFaults";
 import OperatorFaultList from "./components/OperatorFaultList";
 import OrderedParts from "./components/OrderedParts";
+import AssignFaults from "./components/AssignFaults";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -129,10 +130,12 @@ function App() {
 
               {/* Supervisor Route */}
               {userType === "supervisor" && (
-                <Route path="/supervisor-dashboard" element={<SupervisorDashboard />} />
+                <>
+                  <Route path="/supervisor-dashboard" element={<SupervisorDashboard />} />
+                  <Route path="/assign-faults" element={<AssignFaults />} />
+                </>
               )}
-
-              {/*Clerk Only Route */}
+              {/* Clerk Only Route */}
               {userType === "clerk" && (
                 <Route path="/Ordered-Parts" element={<OrderedParts />} />
               )}

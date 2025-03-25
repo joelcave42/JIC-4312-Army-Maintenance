@@ -29,11 +29,11 @@
     padding: 15px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
     
-    /* Ensures all boxes are the same height */
+   
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 250px; /* Fixed height for consistency */
+    height: 250px;
   }
   
   .vehicle-id {
@@ -49,15 +49,15 @@
     margin: 10px 0;
   }
   
-  /* Scrollable issues list inside the box */
+
   .issues-list {
     list-style: none;
     padding: 0;
     margin: 0;
-    max-height: 80px; /* Limit height to ensure scrolling */
+    max-height: 80px; 
     overflow-y: auto;
-    scrollbar-width: thin; /* Firefox */
-    scrollbar-color: #ffc317 #2a362a; /* Gold scrollbar */
+    scrollbar-width: thin; 
+    scrollbar-color: #ffc317 #2a362a; 
   }
   
   .issues-list::-webkit-scrollbar {
@@ -74,15 +74,14 @@
     line-height: 1.4;
   }
   
-  /* Claim button always at bottom */
   .fault-actions {
-    margin-top: auto; /* Pushes the button to the bottom */
+    margin-top: auto; 
     display: flex;
     justify-content: center;
   }
   
   .claim-btn {
-    background: #ffc317; /* Gold */
+    background: #ffc317; 
     color: #2a362a;
     border: none;
     padding: 10px 18px;
@@ -91,7 +90,7 @@
     font-size: 14px;
     font-weight: bold;
     transition: background 0.3s, transform 0.2s;
-    width: 100%; /* Ensures consistency */
+    width: 100%; 
   }
   
   .claim-btn:hover {
@@ -99,14 +98,14 @@
     transform: translateY(-2px);
   }
   
-  /* Responsive adjustments */
+
   @media (max-width: 768px) {
     .fault-items {
       grid-template-columns: 1fr;
     }
   
     .fault-item {
-      height: auto; /* Allows flexible height on smaller screens */
+      height: auto; 
     }
   }
-  
+
