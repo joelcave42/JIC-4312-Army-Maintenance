@@ -217,6 +217,32 @@ const addFaultComment = async (req, res) => {
   }
 };
 
+const undoDeleteFault = async (req, res) => {
+  try {
+    const { id: faultID } = req.params;
+    const fault = await Fault.findById(faultID);
+    if (!fault) {
+      return res.status(404).json({ msg: `Fault with ID ${faultID} doesn't exist` });
+    }
+    if (fault.status !== "deleted") {
+      return res.status(400).json({ msg: "Fault is not deleted" });
+    }
+
+    const deletedTime = new Date(fault.deletedAt);
+    const now = new Date();
+    if (now - deletedTime > 10000) {
+      return res.status(400).json({ msg: "Undo period expired" });
+    }
+    fault.status = "pending";
+    fault.deletedAt = null;
+    fault.deletedBy = null;
+    await fault.save();
+    res.status(200).json({ fault });
+  } catch (error) {
+    res.status(500).json({ msg: `Error undoing deletion: ${error.message}` });
+  }
+};
+
 module.exports = {
     getAllFaults,
     getPendingFaults,
@@ -231,4 +257,5 @@ module.exports = {
     claimFault,
     getOperatorFaults,
     addFaultComment,
+    undoDeleteFault,
 };
