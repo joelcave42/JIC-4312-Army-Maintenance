@@ -19,11 +19,10 @@ const FaultSubmissionForm = () => {
   // Add console logging to debug username
   console.log('Current username:', username);
 
-  // Vehicle-specific maintenance checklists with timelines
-  const vehicleData = {
-    A50: {
-      id: "123456789", // represents vehicle serial number, which will be used to identify the vehicle
-      name: "HMMWV (M998 Series)", //vehicle type
+  // Define vehicle types with their maintenance procedures
+  const vehicleTypes = {
+    HMMWV: {
+      name: "HMMWV (M998 Series)",
       timelines: {
         semiannual: {
           id: "semiannual",
@@ -459,9 +458,8 @@ const FaultSubmissionForm = () => {
         }
       }
     },
-    C14: {
-      id: "C14",
-      name: "Bradley C14",
+    Bradley: {
+      name: "Bradley Fighting Vehicle",
       timelines: {
         semiannual: {
           id: "semiannual",
@@ -571,7 +569,24 @@ const FaultSubmissionForm = () => {
     }
   };
 
-  const [selectedVehicle, setSelectedVehicle] = useState("");
+  // Define specific vehicles of each type
+  const vehicleIds = {
+    HMMWV: [
+      { id: "A50", name: "HMMWV #A50" },
+      { id: "B20", name: "HMMWV #B20" },
+      { id: "C30", name: "HMMWV #C30" }
+    ],
+    Bradley: [
+      { id: "C14", name: "Bradley #C14" },
+      { id: "D05", name: "Bradley #D05" },
+      { id: "E22", name: "Bradley #E22" }
+    ]
+  };
+
+  // State variables
+  const [selectedVehicleType, setSelectedVehicleType] = useState("");
+  const [selectedVehicleId, setSelectedVehicleId] = useState("");
+  const [showVehicleIdSelection, setShowVehicleIdSelection] = useState(false);
   const [showTimelineSelection, setShowTimelineSelection] = useState(false);
   const [showFaultSelection, setShowFaultSelection] = useState(false);
   const [selectedTimelines, setSelectedTimelines] = useState([]);
@@ -579,18 +594,23 @@ const FaultSubmissionForm = () => {
 
   // Combine inspection groups from selected timelines
   const combinedInspectionGroups = useMemo(() => {
-    if (!selectedVehicle || selectedTimelines.length === 0) return [];
+    if (!selectedVehicleType || selectedTimelines.length === 0) return [];
     
     return selectedTimelines.reduce((acc, timeline) => {
-      const timelineGroups = vehicleData[selectedVehicle].timelines[timeline].inspectionGroups;
+      const timelineGroups = vehicleTypes[selectedVehicleType].timelines[timeline].inspectionGroups;
       return [...acc, ...timelineGroups];
     }, []);
-  }, [selectedVehicle, selectedTimelines]);
+  }, [selectedVehicleType, selectedTimelines]);
 
-  const handleVehicleSelect = (vehicleId) => {
-    setSelectedVehicle(vehicleId);
-    setSelectedTimelines([]);
-    setShowFaultSelection(false);
+  // Handle vehicle type selection
+  const handleVehicleTypeSelect = (vehicleType) => {
+    setSelectedVehicleType(vehicleType);
+    setSelectedVehicleId("");
+  };
+
+  // Handle specific vehicle selection
+  const handleVehicleIdSelect = (vehicleId) => {
+    setSelectedVehicleId(vehicleId);
   };
 
   const handleTimelineSelect = (timelineId) => {
@@ -602,9 +622,17 @@ const FaultSubmissionForm = () => {
     });
   };
 
-  const handleNextFromVehicle = () => {
-    if (!selectedVehicle) {
-      toast.error("Please select a vehicle first");
+  const handleNextFromVehicleType = () => {
+    if (!selectedVehicleType) {
+      toast.error("Please select a vehicle type first");
+      return;
+    }
+    setShowVehicleIdSelection(true);
+  };
+
+  const handleNextFromVehicleId = () => {
+    if (!selectedVehicleId) {
+      toast.error("Please select a specific vehicle first");
       return;
     }
     setShowTimelineSelection(true);
@@ -626,39 +654,69 @@ const FaultSubmissionForm = () => {
     );
   };
 
-  // Adds submitted faults to the total fault and pending fault lists
+  // Submit handler
   const handleSubmit = async (e) => {
     e.preventDefault();
     setShowConfirmation(true);
   };
 
   const handleConfirmSubmit = async () => {
-    const url = "http://localhost:3000/api/v1/faults";
-    const faultData = {
-      vehicleId: selectedVehicle,
-      timelines: selectedTimelines,
-      issues: selectedFaults,
-      createdBy: localStorage.getItem("username"),
-    };
-
     try {
-      await axios.post(url, faultData);
+      const url = "http://localhost:3000/api/v1/faults";
+      
+      const submitPromises = selectedFaults.map(async (faultId) => {
+        // Find the fault details 
+        let faultDetails = null;
+        
+        for (const group of combinedInspectionGroups) {
+          const matchingItem = group.items.find(item => item.id === faultId);
+          if (matchingItem) {
+            faultDetails = {
+              ...matchingItem,
+              groupTitle: group.title
+            };
+            break;
+          }
+        }
+        
+        if (!faultDetails) {
+          console.error(`Fault with ID ${faultId} not found`);
+          return null;
+        }
+        
+        // Submit with both vehicle type and specific ID
+        const faultData = {
+          vehicleType: selectedVehicleType,
+          vehicleId: selectedVehicleId,
+          issues: [faultId],
+          createdBy: localStorage.getItem("username"),
+          timelines: selectedTimelines,
+        };
+        
+        return axios.post(url, faultData);
+      });
+      
+      await Promise.all(submitPromises);
+      
       store.dispatch(changeStatusListener());
       setSelectedFaults([]);
       setShowFaultSelection(false);
       setShowTimelineSelection(false);
+      setShowVehicleIdSelection(false);
       setSelectedTimelines([]);
-      setSelectedVehicle("");
+      setSelectedVehicleId("");
+      setSelectedVehicleType("");
       setShowConfirmation(false);
-      toast.success("Fault submission successful!");
+      toast.success("Fault submissions successful!");
     } catch (error) {
+      console.error("Error details:", error);
       toast.error("Error submitting faults: " + error.message);
     }
   };
 
   // Group faults by their inspection group
   const groupedFaults = useMemo(() => {
-    if (!selectedVehicle || selectedFaults.length === 0) return [];
+    if (!selectedVehicleType || selectedFaults.length === 0) return [];
     
     const groups = {};
     combinedInspectionGroups.forEach(group => {
@@ -668,56 +726,94 @@ const FaultSubmissionForm = () => {
       }
     });
     return groups;
-  }, [selectedVehicle, selectedFaults, combinedInspectionGroups]);
+  }, [selectedVehicleType, selectedFaults, combinedInspectionGroups]);
 
   const handleBack = () => {
     if (showFaultSelection) {
       setShowFaultSelection(false);
     } else if (showTimelineSelection) {
       setShowTimelineSelection(false);
+    } else if (showVehicleIdSelection) {
+      setShowVehicleIdSelection(false);
     } else {
       navigate("/home");
     }
+  };
+
+  // Find the selected vehicle name
+  const getSelectedVehicleName = () => {
+    if (!selectedVehicleId || !selectedVehicleType) return "";
+    const vehicle = vehicleIds[selectedVehicleType].find(v => v.id === selectedVehicleId);
+    return vehicle ? vehicle.name : "";
   };
 
   return (
     <div className="fault-submission-main">
       <button className="back-button" onClick={handleBack}>
         {showFaultSelection ? "Back to Timeline Selection" : 
-         showTimelineSelection ? "Back to Vehicle Selection" : "Back"}
+         showTimelineSelection ? "Back to Vehicle Selection" : 
+         showVehicleIdSelection ? "Back to Vehicle Type Selection" : "Back"}
       </button>
       
-      {!showTimelineSelection && (
+      {/* Vehicle Type Selection */}
+      {!showVehicleIdSelection && (
         <div className="vehicle-selection">
           <h1 className="vehicle-selection-title">Select Vehicle Type</h1>
-          <p className="vehicle-selection-subtitle">Choose the vehicle type you want to perform maintenance on</p>
+          <p className="vehicle-selection-subtitle">Choose the vehicle platform you want to perform maintenance on</p>
           <div className="vehicle-grid">
-            {Object.entries(vehicleData)
+            {Object.entries(vehicleTypes)
               .sort(([, a], [, b]) => a.name.localeCompare(b.name))
-              .map(([vehicleKey, vehicle]) => (
+              .map(([typeKey, type]) => (
                 <button
-                  key={vehicleKey}
-                  className={`vehicle-button ${selectedVehicle === vehicleKey ? 'selected' : ''}`}
-                  onClick={() => handleVehicleSelect(vehicleKey)}
+                  key={typeKey}
+                  className={`vehicle-button ${selectedVehicleType === typeKey ? 'selected' : ''}`}
+                  onClick={() => handleVehicleTypeSelect(typeKey)}
                 >
-                  {vehicle.name}
+                  {type.name}
                 </button>
               ))}
           </div>
           <button 
             className="next-button"
-            onClick={handleNextFromVehicle}
+            onClick={handleNextFromVehicleType}
           >
             Next
           </button>
         </div>
       )}
+      
+      {/* Specific Vehicle ID Selection */}
+      {showVehicleIdSelection && !showTimelineSelection && (
+        <div className="vehicle-selection">
+          <h1 className="vehicle-selection-title">Select Specific Vehicle</h1>
+          <p className="vehicle-selection-subtitle">Choose the specific {vehicleTypes[selectedVehicleType].name} you want to perform maintenance on</p>
+          <div className="vehicle-grid">
+            {vehicleIds[selectedVehicleType].map(vehicle => (
+              <button
+                key={vehicle.id}
+                className={`vehicle-button ${selectedVehicleId === vehicle.id ? 'selected' : ''}`}
+                onClick={() => handleVehicleIdSelect(vehicle.id)}
+              >
+                {vehicle.name}
+              </button>
+            ))}
+          </div>
+          <button 
+            className="next-button"
+            onClick={handleNextFromVehicleId}
+          >
+            Next
+          </button>
+        </div>
+      )}
+      
+      {/* Timeline Selection */}
       {showTimelineSelection && !showFaultSelection && (
         <div className="timeline-selection">
           <h1 className="form-title">Select Maintenance Timeline(s)</h1>
           <p className="timeline-selection-title">Select one or more timelines to perform maintenance on</p>
           <div className="timeline-grid">
-            {Object.values(vehicleData[selectedVehicle].timelines).map((timeline) => (
+            {Object.values(vehicleTypes[selectedVehicleType].timelines).map((timeline) => (
               <button
                 key={timeline.id}
                 className={`timeline-button ${selectedTimelines.includes(timeline.id) ? 'selected' : ''}`}
@@ -728,7 +824,7 @@ const FaultSubmissionForm = () => {
             ))}
           </div>
           <div className="selected-timelines">
-            Selected: {selectedTimelines.map(t => vehicleData[selectedVehicle].timelines[t].name).join(", ")}
+            Selected: {selectedTimelines.map(t => vehicleTypes[selectedVehicleType].timelines[t].name).join(", ")}
           </div>
           <button 
             className="next-button"
@@ -738,20 +834,23 @@ const FaultSubmissionForm = () => {
           </button>
         </div>
       )}
+      
+      {/* Fault Selection Form */}
       {showFaultSelection && (
       <form className="fault-submission-form" onSubmit={handleSubmit}>
           <div className="vehicle-id-box">
-            <div>Vehicle: {vehicleData[selectedVehicle].name}</div>
+            <div>Vehicle Type: {vehicleTypes[selectedVehicleType].name}</div>
+            <div>Vehicle ID: {getSelectedVehicleName()}</div>
             <div className="timeline-info">
-              Maintenance: {selectedTimelines.map(t => vehicleData[selectedVehicle].timelines[t].name).join(" + ")}
+              Maintenance: {selectedTimelines.map(t => vehicleTypes[selectedVehicleType].timelines[t].name).join(" + ")}
             </div>
           </div>
-        <h1 className="form-title">PMCS Walkthrough</h1>
+          <h1 className="form-title">PMCS Walkthrough</h1>
           <div className="fault-selection-container">
             <div className="inspection-groups">
               {combinedInspectionGroups.map((group, groupIndex) => (
                 <div key={groupIndex} className="inspection-group">
-              <h3 className="group-title">{group.title}</h3>
+                  <h3 className="group-title">{group.title}</h3>
                   {group.disclaimers && group.disclaimers.map((disclaimer, index) => (
                     <div key={index} className="group-disclaimer">
                       {disclaimer}
@@ -761,8 +860,8 @@ const FaultSubmissionForm = () => {
                     <div key={item.id} className="inspection-item">
                       <label className="item-label">
                         <div className="item-header">
-                  <input
-                    type="checkbox"
+                          <input
+                            type="checkbox"
                             checked={selectedFaults.includes(item.id)}
                             onChange={() => handleCheckboxChange(item.id)}
                           />
@@ -802,27 +901,29 @@ const FaultSubmissionForm = () => {
                             </div>
                           )}
                         </div>
-                </label>
+                      </label>
                     </div>
+                  ))}
+                </div>
               ))}
             </div>
-          ))}
-            </div>
-        </div>
-        <button type="submit" className="form-submit">
-          Verify and Submit
-        </button>
-      </form>
+          </div>
+          <button type="submit" className="form-submit">
+            Verify and Submit
+          </button>
+        </form>
       )}
       
+      {/* Confirmation Modal */}
       {showConfirmation && (
         <div className="modal-overlay">
           <div className="confirmation-modal">
             <h2 className="modal-title">Confirm PMCS Submission</h2>
             <div className="modal-content">
               <div className="modal-vehicle-info">
-                <div className="vehicle-name">{vehicleData[selectedVehicle].name}</div>
-                <div>Maintenance: {selectedTimelines.map(t => vehicleData[selectedVehicle].timelines[t].name).join(" + ")}</div>
+                <div className="vehicle-type">{vehicleTypes[selectedVehicleType].name}</div>
+                <div className="vehicle-name">{getSelectedVehicleName()}</div>
+                <div>Maintenance: {selectedTimelines.map(t => vehicleTypes[selectedVehicleType].timelines[t].name).join(" + ")}</div>
                 <div>Total Issues: {selectedFaults.length}</div>
                 <div className="modal-username">Submitted by: {username || 'Not logged in'}</div>
               </div>

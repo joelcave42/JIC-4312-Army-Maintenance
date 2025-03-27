@@ -67,10 +67,6 @@ const HomeScreen = ({ userType }) => {
       <h1 className="home-title">
         U.S. Army Equipment Maintenance Intake System
       </h1>
-      <h2>
-        Will implement dashboard features in the future and decide which
-        functionalities would need to be added here.
-      </h2>
 
       {/* Banner for newly arrived parts */}
       {userType === "operator" && showBanner && arrivedParts.length > 0 && (
