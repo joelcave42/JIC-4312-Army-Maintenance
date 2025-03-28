@@ -33,10 +33,15 @@ function SignUpPage() {
  
       if (response.ok && data.success) {
         alert("Sign up successful!");
-        navigate("/"); // Redirect to LoginPage after successful sign-up
+        navigate("/");
       } else {
-        alert("Error signing up: " + data.message);
-      }
+        // If the message contains E11000, it’s a duplicate username
+        if (data.message && data.message.includes("E11000")) {
+          alert("That username is already taken. Please choose a different one.");
+        } else {
+          alert("Error signing up: " + data.message);
+        }
+      }      
     } catch (error) {
       console.error("Error:", error);
       alert("An unexpected error occurred. Please try again.");
