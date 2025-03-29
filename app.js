@@ -9,6 +9,7 @@ const connectDB = require("./db/connect");
 const faultsRouter = require("./routes/faults");
 const accountsRouter = require("./routes/accounts"); 
 const partsRouter = require("./routes/parts"); // ✅ Import parts route
+const inventoryRouter = require("./routes/inventory"); // ✅ Import inventory route
 
 app.use(express.json());
 app.use(cors());
@@ -17,6 +18,7 @@ app.use(cors());
 app.use("/api/v1/faults", faultsRouter);
 app.use("/api/v1/accounts", accountsRouter); 
 app.use("/api/v1/parts", partsRouter); // ✅ Register parts API
+app.use("/api/v1/inventory", inventoryRouter); // ✅ Register inventory API
 
 // Set connection port to port specified in .env or default (3000)
 const port = process.env.PORT || 3000;

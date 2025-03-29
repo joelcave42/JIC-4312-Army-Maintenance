@@ -21,6 +21,9 @@ const Menu = ({ userType }) => {
           <button onClick={() => navigate("/ordered-parts")}>
             Ordered Parts
           </button> {/* New button for part ordering */}
+          <button onClick={() => navigate("/inventory-management")}>
+            Inventory Management
+          </button> {/* New button for inventory management */}
         </>
       )}
 

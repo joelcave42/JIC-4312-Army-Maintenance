@@ -23,6 +23,7 @@ import ClaimedFaults from "./components/ClaimedFaults";
 import OperatorFaultList from "./components/OperatorFaultList";
 import OrderedParts from "./components/OrderedParts";
 import AssignFaults from "./components/AssignFaults";
+import InventoryManagement from "./components/InventoryManagement";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -137,9 +138,11 @@ function App() {
               )}
               {/* Clerk Only Route */}
               {userType === "clerk" && (
-                <Route path="/Ordered-Parts" element={<OrderedParts />} />
+                <>
+                  <Route path="/ordered-parts" element={<OrderedParts />} />
+                  <Route path="/inventory-management" element={<InventoryManagement />} />
+                </>
               )}
-
 
               <Route path="*" element={<Navigate to="/home" replace />} />
             </>
