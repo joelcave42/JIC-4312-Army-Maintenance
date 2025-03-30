@@ -2,8 +2,16 @@ const mongoose = require("mongoose");
 
 // Required schema for fault objects
 const FaultSchema = new mongoose.Schema({
+    vehicleType: {                   // <-- NEW field
+        type: String,
+        required: true
+    },
     vehicleId: {
         type: String,
+        required: true
+    },
+    timelines: {
+        type: [String],
         required: true
     },
     issues: {

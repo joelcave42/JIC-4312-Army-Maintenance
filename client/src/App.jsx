@@ -116,6 +116,7 @@ function App() {
               <Route path="/fault-list" element={<FaultList />} />
               <Route path="/completed-faults" element={<CompletedFaultList />} />
               <Route path="/operator-faults" element={<OperatorFaultList />} />
+              <Route path="/reopen-fault/:faultId" element={<FaultSubmissionForm isReopenMode={true} />} />
               <Route
                 path="/fault-submission"
                 element={
