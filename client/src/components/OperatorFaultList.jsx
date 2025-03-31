@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 const OperatorFaultList = () => {
   const navigate = useNavigate();
   const [faults, setFaults] = useState([]);
-  const [partsByFault, setPartsByFault] = useState({}); // to store arrays of parts keyed by faultId
+  const [partsByFault, setPartsByFault] = useState({});
   const username = localStorage.getItem("username");
   const [imageUrls, setImageUrls] = useState({});
 
@@ -15,21 +15,15 @@ const OperatorFaultList = () => {
     fetchFaults();
   }, []);
 
-  // 1️⃣ Fetch the operator's faults (by username)
   const fetchFaults = async () => {
     try {
       const response = await axios.get(
         `http://localhost:3000/api/v1/faults/operator/${username}`
       );
       const faultData = response.data.faults;
-      
-      // Add debugging logs
-      console.log('Fetched operator faults:', faultData);
-      console.log('Sample fault deletedAt:', faultData[0]?.deletedAt);
-      
       setFaults(faultData);
 
-      // 2️⃣ For each fault, fetch its parts
+      // Fetch parts for each fault
       faultData.forEach((fault) => {
         fetchPartsForFault(fault._id);
         fetchImageforFault(fault._id);
@@ -40,17 +34,13 @@ const OperatorFaultList = () => {
     }
   };
 
-  // 2️⃣ For each fault, fetch parts referencing that fault
   const fetchPartsForFault = async (faultId) => {
     try {
-      // Use the ?fault=faultId query param (your parts controller supports this)
       const response = await axios.get(
         `http://localhost:3000/api/v1/parts?fault=${faultId}`
       );
-
       if (response.data.success) {
-        const parts = response.data.data; // array of PartOrder docs
-        // Store them under this fault in our partsByFault state
+        const parts = response.data.data;
         setPartsByFault((prev) => ({ ...prev, [faultId]: parts }));
       }
     } catch (error) {

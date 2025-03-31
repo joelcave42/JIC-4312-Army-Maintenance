@@ -104,6 +104,24 @@
     transform: translateY(-2px);
 }
 
+.validate-btn {
+    background: #4CAF50; /* Green for validation */
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: background 0.3s, transform 0.2s;
+    margin-right: 5px;
+}
+
+.validate-btn:hover {
+    background: #3e8e41;
+    transform: translateY(-2px);
+}
+
 /* Toggle Fault List Button */
 .toggle-fault-list-button-container {
   text-align: center;

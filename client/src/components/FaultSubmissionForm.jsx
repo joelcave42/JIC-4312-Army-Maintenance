@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import "../styles/FaultSubmissionForm.css";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
@@ -10,8 +10,9 @@ import {
 import { store } from "../store";
 import { toast } from "react-toastify";
 
-const FaultSubmissionForm = () => {
+const FaultSubmissionForm = ({ isReopenMode }) => {
   const navigate = useNavigate();
+  const { faultId } = useParams();
   const { inputValues, username } = useSelector((state) => state.globalValues);
   const dispatch = useDispatch();
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -593,6 +594,36 @@ const FaultSubmissionForm = () => {
   const [selectedFaults, setSelectedFaults] = useState([]);
   const [selectedFaultImages, setSelectedFaultImages] = useState({});
 
+  //useEffect for isReopenMode/faultId here
+  React.useEffect(() => {
+    if (isReopenMode && faultId) {
+      axios
+        .get(`http://localhost:3000/api/v1/faults/${faultId}`)
+        .then(res => {
+          const existingFault = res.data.fault;
+          if (!existingFault) {
+            toast.error("Fault not found");
+            return;
+          }
+          // Pre-populate your states:
+          setSelectedVehicleType(existingFault.vehicleType);
+          setSelectedVehicleId(existingFault.vehicleId);
+          setSelectedTimelines(existingFault.timelines || []);
+          setSelectedFaults(existingFault.issues || []);
+  
+          // If you want to SKIP the “select vehicle type” screens,
+          // jump straight to the final step:
+          setShowVehicleIdSelection(true);
+          setShowTimelineSelection(true);
+          setShowFaultSelection(true);
+        })
+        .catch(err => {
+          console.error(err);
+          toast.error("Failed to load fault for editing");
+        });
+    }
+  }, [isReopenMode, faultId]);
+
   // Combine inspection groups from selected timelines
   const combinedInspectionGroups = useMemo(() => {
     if (!selectedVehicleType || selectedTimelines.length === 0) return [];
@@ -730,6 +761,7 @@ const FaultSubmissionForm = () => {
       toast.error("Error submitting faults: " + error.message);
     }
   };
+  
 
   // Group faults by their inspection group
   const groupedFaults = useMemo(() => {
@@ -767,23 +799,31 @@ const FaultSubmissionForm = () => {
   return (
     <div className="fault-submission-main">
       <button className="back-button" onClick={handleBack}>
-        {showFaultSelection ? "Back to Timeline Selection" : 
-         showTimelineSelection ? "Back to Vehicle Selection" : 
-         showVehicleIdSelection ? "Back to Vehicle Type Selection" : "Back"}
+        {showFaultSelection
+          ? "Back to Timeline Selection"
+          : showTimelineSelection
+          ? "Back to Vehicle Selection"
+          : showVehicleIdSelection
+          ? "Back to Vehicle Type Selection"
+          : "Back"}
       </button>
   
       {/* Vehicle Type Selection */}
       {!showVehicleIdSelection && (
         <div className="vehicle-selection">
           <h1 className="vehicle-selection-title">Select Vehicle Type</h1>
-          <p className="vehicle-selection-subtitle">Choose the vehicle platform you want to perform maintenance on</p>
+          <p className="vehicle-selection-subtitle">
+            Choose the vehicle platform you want to perform maintenance on
+          </p>
           <div className="vehicle-grid">
             {Object.entries(vehicleTypes)
               .sort(([, a], [, b]) => a.name.localeCompare(b.name))
               .map(([typeKey, type]) => (
                 <button
                   key={typeKey}
-                  className={`vehicle-button ${selectedVehicleType === typeKey ? 'selected' : ''}`}
+                  className={`vehicle-button ${
+                    selectedVehicleType === typeKey ? "selected" : ""
+                  }`}
                   onClick={() => handleVehicleTypeSelect(typeKey)}
                 >
                   {type.name}
@@ -804,10 +844,12 @@ const FaultSubmissionForm = () => {
             Choose the specific {vehicleTypes[selectedVehicleType].name} you want to perform maintenance on
           </p>
           <div className="vehicle-grid">
-            {vehicleIds[selectedVehicleType].map(vehicle => (
+            {vehicleIds[selectedVehicleType]?.map((vehicle) => (
               <button
                 key={vehicle.id}
-                className={`vehicle-button ${selectedVehicleId === vehicle.id ? 'selected' : ''}`}
+                className={`vehicle-button ${
+                  selectedVehicleId === vehicle.id ? "selected" : ""
+                }`}
                 onClick={() => handleVehicleIdSelect(vehicle.id)}
               >
                 {vehicle.name}
@@ -824,20 +866,31 @@ const FaultSubmissionForm = () => {
       {showTimelineSelection && !showFaultSelection && (
         <div className="timeline-selection">
           <h1 className="form-title">Select Maintenance Timeline(s)</h1>
-          <p className="timeline-selection-title">Select one or more timelines to perform maintenance on</p>
+          <p className="timeline-selection-title">
+            Select one or more timelines to perform maintenance on
+          </p>
           <div className="timeline-grid">
-            {Object.values(vehicleTypes[selectedVehicleType].timelines).map((timeline) => (
-              <button
-                key={timeline.id}
-                className={`timeline-button ${selectedTimelines.includes(timeline.id) ? 'selected' : ''}`}
-                onClick={() => handleTimelineSelect(timeline.id)}
-              >
-                {timeline.name}
-              </button>
-            ))}
+            {Object.values(vehicleTypes[selectedVehicleType]?.timelines || {}).map(
+              (timeline) => (
+                <button
+                  key={timeline.id}
+                  className={`timeline-button ${
+                    selectedTimelines.includes(timeline.id) ? "selected" : ""
+                  }`}
+                  onClick={() => handleTimelineSelect(timeline.id)}
+                >
+                  {timeline.name}
+                </button>
+              )
+            )}
           </div>
           <div className="selected-timelines">
-            Selected: {selectedTimelines.map(t => vehicleTypes[selectedVehicleType].timelines[t].name).join(", ")}
+            Selected:{" "}
+            {selectedTimelines
+              .map(
+                (t) => vehicleTypes[selectedVehicleType]?.timelines[t]?.name
+              )
+              .join(", ")}
           </div>
           <button className="next-button" onClick={handleNextFromTimeline}>
             Start PMCS
@@ -849,10 +902,19 @@ const FaultSubmissionForm = () => {
       {showFaultSelection && (
         <form className="fault-submission-form" onSubmit={handleSubmit}>
           <div className="vehicle-id-box">
-            <div>Vehicle Type: {vehicleTypes[selectedVehicleType].name}</div>
+            <div>
+              Vehicle Type:{" "}
+              {vehicleTypes[selectedVehicleType]?.name || "Unknown Vehicle Type"}
+            </div>
             <div>Vehicle ID: {getSelectedVehicleName()}</div>
             <div className="timeline-info">
-              Maintenance: {selectedTimelines.map(t => vehicleTypes[selectedVehicleType].timelines[t].name).join(" + ")}
+              Maintenance:{" "}
+              {selectedTimelines
+                .map(
+                  (t) =>
+                    vehicleTypes[selectedVehicleType]?.timelines[t]?.name
+                )
+                .join(" + ")}
             </div>
           </div>
           <h1 className="form-title">PMCS Walkthrough</h1>
@@ -933,18 +995,31 @@ const FaultSubmissionForm = () => {
             <h2 className="modal-title">Confirm PMCS Submission</h2>
             <div className="modal-content">
               <div className="modal-vehicle-info">
-                <div className="vehicle-type">{vehicleTypes[selectedVehicleType].name}</div>
+                <div className="vehicle-type">
+                  {vehicleTypes[selectedVehicleType]?.name ||
+                    "Unknown Vehicle Type"}
+                </div>
                 <div className="vehicle-name">{getSelectedVehicleName()}</div>
-                <div>Maintenance: {selectedTimelines.map(t => vehicleTypes[selectedVehicleType].timelines[t].name).join(" + ")}</div>
+                <div>
+                  Maintenance:{" "}
+                  {selectedTimelines
+                    .map(
+                      (t) =>
+                        vehicleTypes[selectedVehicleType]?.timelines[t]?.name
+                    )
+                    .join(" + ")}
+                </div>
                 <div>Total Issues: {selectedFaults.length}</div>
-                <div className="modal-username">Submitted by: {username || 'Not logged in'}</div>
+                <div className="modal-username">
+                  Submitted by: {username || "Not logged in"}
+                </div>
               </div>
   
               <div className="modal-faults">
                 {Object.entries(groupedFaults).map(([groupTitle, faults]) => (
                   <div key={groupTitle} className="modal-fault-group">
                     <h3 className="modal-fault-group-title">{groupTitle}</h3>
-                    {faults.map(fault => (
+                    {faults.map((fault) => (
                       <div key={fault.id} className="modal-fault-item">
                         <div className="procedure" dangerouslySetInnerHTML={{ __html: fault.procedure }} />
                         {fault.criteria && (
@@ -969,10 +1044,16 @@ const FaultSubmissionForm = () => {
               </div>
   
               <div className="modal-buttons">
-                <button className="modal-button modal-cancel" onClick={() => setShowConfirmation(false)}>
+                <button
+                  className="modal-button modal-cancel"
+                  onClick={() => setShowConfirmation(false)}
+                >
                   Cancel
                 </button>
-                <button className="modal-button modal-confirm" onClick={handleConfirmSubmit}>
+                <button
+                  className="modal-button modal-confirm"
+                  onClick={handleConfirmSubmit}
+                >
                   Confirm Submission
                 </button>
               </div>

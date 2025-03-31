@@ -88,6 +88,25 @@ const ClaimedFaults = () => {
     }
   };
 
+  // Add the validateFault function
+  const validateFault = async (id) => {
+    try {
+      const response = await axios.patch(`http://localhost:3000/api/v1/faults/${id}/validated`);
+      
+      // Update the fault in the local state
+      setFaults((prevFaults) => 
+        prevFaults.map((fault) => 
+          fault._id === id ? { ...fault, status: "validated" } : fault
+        )
+      );
+      
+      store.dispatch(changeStatusListener());
+      toast.success("Fault validated successfully");
+    } catch (error) {
+      toast.error(error.message || "Failed to validate fault");
+    }
+  };
+
   const correctFault = async (id) => {
     try {
       await axios.patch(`http://localhost:3000/api/v1/faults/${id}/correct`);
@@ -245,7 +264,18 @@ const ClaimedFaults = () => {
                   >
                     Corrected
                   </button>
+                  
+                  {/* Add Validate button for pending faults */}
                   {fault.status === "pending" && (
+                    <button
+                      onClick={() => validateFault(fault._id)}
+                      className="action-btn validate-btn"
+                    >
+                      Validate
+                    </button>
+                  )}
+                  
+                  {(fault.status === "pending" || fault.status === "validated") && (
                     <button
                       onClick={() => markFaultInProgress(fault._id)}
                       className="action-btn status-btn"

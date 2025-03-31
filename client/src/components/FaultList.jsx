@@ -132,6 +132,25 @@ const FaultList = () => {
     }
   };
 
+  // Mark a fault as validated
+  const validateFault = async (id) => {
+    try {
+      const response = await axios.patch(`${faultsUrl}/${id}/validated`);
+      
+      // Update the fault in the local state
+      setFaults((prev) => 
+        prev.map((fault) => 
+          fault._id === id ? { ...fault, status: "validated" } : fault
+        )
+      );
+      
+      store.dispatch(changeStatusListener());
+      toast.success("Fault validated successfully");
+    } catch (error) {
+      toast.error(error.message || "Failed to validate fault");
+    }
+  };
+
   useEffect(() => {
     fetchFaults();
   }, [statusListener]);
@@ -148,6 +167,7 @@ const FaultList = () => {
           {faults.map((fault) => (
             <div key={fault._id} className="fault-item">
               <p className="vehicle-id">Vehicle ID: {fault.vehicleId}</p>
+              <p className="fault-status"><strong>Status:</strong> {fault.status}</p>
               <p className="fault-issues">Issues:</p>
               <ul className="issues-list">
                 {fault.issues.map((issue, index) => (
@@ -163,6 +183,16 @@ const FaultList = () => {
                 <button onClick={() => correctFault(fault._id)} className="correct-btn">
                   Fault Corrected
                 </button>
+
+                {/* Add Validate button for clerks, supervisors, or maintainers, but only for pending faults */}
+                {(userType === "clerk" || userType === "supervisor" || userType === "maintainer") && fault.status === "pending" && (
+                  <button 
+                    onClick={() => validateFault(fault._id)} 
+                    className="validate-btn"
+                  >
+                    Validate
+                  </button>
+                )}
 
                 {/* If user is a clerk, show "Order Parts" button */}
                 {userType === "clerk" && (

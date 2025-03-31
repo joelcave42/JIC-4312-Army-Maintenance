@@ -216,6 +216,15 @@
   transform: translateY(-2px);
 }
 
+.action-btn.validate-btn {
+  background-color: #4CAF50; /* Green for validation */
+  color: white;
+}
+
+.action-btn.validate-btn:hover {
+  background-color: #3e8e41;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .fault-items {
