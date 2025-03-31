@@ -42,6 +42,19 @@ Develop a web and mobile application that allows operators to log vehicle defici
 - Advanced Troubleshooting: Develop deeper integration for identifying parts and actions based on fault analysis.
 
 # Release Notes
+
+## Version 0.4.04 Release Notes
+
+### New Features
+- Implemented functionality to allow supervisors to assign maintainence tasks to maintainers
+- Implemented undo functionality for fault submissions
+- Implemented simple parts inventory system
+- Implemented fault editing capabilites
+- Implemented functionality to allow for pictures to be attached to each fault
+
+### Bug Fixes
+- Changed faults to present each issue as its own fault
+
 ## Version 0.3.0 Release Notes
 
 ### New Features
