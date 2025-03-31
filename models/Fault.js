@@ -20,7 +20,7 @@ const FaultSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ["pending","in progress", "awaiting part", "completed", "deleted"],
+        enum: ["pending", "validated", "in progress", "awaiting part", "completed", "deleted"],
         default: "pending",
     },
     customIssue: {

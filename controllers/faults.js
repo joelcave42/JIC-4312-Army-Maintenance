@@ -14,7 +14,8 @@ const getAllFaults = async (req, res) => {
 // Get all pending faults
 const getPendingFaults = async (req, res) => {
     try {
-        const faults = await Fault.find({ status: "pending" });
+        // Include both pending and validated faults, since both are claimable by maintainers
+        const faults = await Fault.find({ status: { $in: ["pending", "validated"] } });
         res.status(200).json({ faults, count: faults.length });
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -243,6 +244,23 @@ const undoDeleteFault = async (req, res) => {
   }
 };
 
+const markFaultValidated = async (req, res) => {
+    try {
+        const { id: faultID } = req.params;
+        const updatedFault = await Fault.findByIdAndUpdate(
+            faultID,
+            { status: "validated" },
+            { new: true }
+        );
+        if (!updatedFault) {
+            return res.status(404).json({ msg: `Fault with ID ${faultID} doesn't exist`});
+        }
+        res.status(200).json({ fault: updatedFault });
+    } catch (error) {
+        res.status(500).json({ message: `Error marking fault as validated: ${error.message}` });
+    }
+};
+
 module.exports = {
     getAllFaults,
     getPendingFaults,
@@ -258,4 +276,5 @@ module.exports = {
     getOperatorFaults,
     addFaultComment,
     undoDeleteFault,
+    markFaultValidated
 };
