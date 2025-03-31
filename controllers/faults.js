@@ -34,12 +34,34 @@ const getCompletedFaults = async (req, res) => {
 // Add fault to the total and pending fault lists
 const addFault = async (req, res) => {
     try {
-        const fault = await Fault.create(req.body);
-        res.status(201).json({ fault });
+      const {
+        vehicleType,
+        vehicleId,
+        issues,
+        createdBy,
+        timelines,
+      } = req.body;
+  
+      const faultData = {
+        vehicleType,
+        vehicleId,
+        issues: Array.isArray(issues) ? issues : [issues],
+        createdBy,
+        timelines: Array.isArray(timelines) ? timelines : [timelines],
+      };
+  
+      if (req.file) {
+        faultData.image = req.file.buffer;
+        faultData.imageMimeType = req.file.mimetype;
+      }
+  
+      const fault = await Fault.create(faultData);
+      res.status(201).json({ fault });
     } catch (error) {
-        res.status(400).json({ message: error.message });
+      console.error("ADD FAULT ERROR:", error);
+      res.status(500).json({ message: error.message });
     }
-};
+  };
 
 // Get fault by object ID
 const getFault = async (req, res) => {
@@ -243,6 +265,17 @@ const undoDeleteFault = async (req, res) => {
   }
 };
 
+const getFaultImage = async (req, res) => {
+    try {
+        const fault = await Fault.findById(req.params.id);
+        if (!fault || !fault.image) return res.status(404).json({ msg: "No image" });
+        res.set("Content-Type", fault.imageMimeType || "image/jpeg");
+        res.send(fault.image);
+    } catch (err) {
+        res.status(500).json({ msg: "Image retrieval error" });
+    }
+};
+
 module.exports = {
     getAllFaults,
     getPendingFaults,
@@ -258,4 +291,5 @@ module.exports = {
     getOperatorFaults,
     addFaultComment,
     undoDeleteFault,
+    getFaultImage
 };

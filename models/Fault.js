@@ -51,7 +51,15 @@ const FaultSchema = new mongoose.Schema({
     deletedBy: {
         type: String,
         default: null
-    }
+    },
+    image: {
+        type: Buffer,
+        required: false,
+    },
+    imageMimeType: {
+        type: String,
+        required: false,
+    },
 });
 
 FaultSchema.index({ createdAt: 1 }); //stores indexes from oldest creation to newest
