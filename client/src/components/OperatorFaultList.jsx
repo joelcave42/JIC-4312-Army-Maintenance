@@ -23,7 +23,6 @@ const OperatorFaultList = () => {
       const faultData = response.data.faults;
       setFaults(faultData);
 
-      // Fetch parts for each fault
       faultData.forEach((fault) => {
         fetchPartsForFault(fault._id);
         fetchImageforFault(fault._id);
@@ -61,9 +60,8 @@ const OperatorFaultList = () => {
     }
   };
 
-  // NEW: Handler to navigate to an "edit fault" page/component
   const handleEditFault = (faultId) => {
-    navigate(`/edit-fault/${faultId}`);
+    navigate(`/reopen-fault/${faultId}`);
   };
 
   return (
@@ -145,63 +143,27 @@ const OperatorFaultList = () => {
                 {faultParts.length === 0 ? (
                   <p>No parts ordered yet.</p>
                 ) : (
-                  <ul>
-                    {faultParts.map((part, idx) => (
-                      <li key={idx}>{part}</li>
+                  <ul className="parts-list">
+                    {faultParts.map((part) => (
+                      <li key={part._id} className="part-item">
+                        {part.partName} (Qty: {part.quantity}) — {part.status}
+                        {part.status === "ARRIVED" && part.arrivedAt && (
+                          <span>
+                            {" "}
+                            Arrived at:{" "}
+                            {new Date(part.arrivedAt).toLocaleString()}
+                          </span>
+                        )}
+                      </li>
                     ))}
                   </ul>
                 )}
               </div>
 
               <div className="edit-button-container">
-                <button onClick={() => handleEditFault(fault._id)}>
-                  Edit Fault
-                </button>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-
-                ) : (
-                  <ul className="parts-list">
-                    {faultParts.map((part) => (
-                      <li key={part._id} className="part-item">
-                        {part.partName} (Qty: {part.quantity}) — {part.status}
-                        {part.status === "ARRIVED" && part.arrivedAt && (
-                          <span> Arrived at: {new Date(part.arrivedAt).toLocaleString()}</span>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-                <div className="parts-section">
-                  <h4 className="parts-title">Parts for this Fault:</h4>
-                  {faultParts.length === 0 ? (
-                    <p>No parts ordered yet.</p>
-                  ) : (
-                    <ul className="parts-list">
-                      {faultParts.map((part) => (
-                        <li key={part._id} className="part-item">
-                          {part.partName} (Qty: {part.quantity}) — {part.status}
-                          {part.status === "ARRIVED" && part.arrivedAt && (
-                            <span>
-                              &nbsp;Arrived at:{" "}
-                              {new Date(part.arrivedAt).toLocaleString()}
-                            </span>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-
-                {/* NEW: Edit button (can disable if 'deleted') */}
                 <button
                   className="edit-button"
-                  onClick={() => navigate(`/reopen-fault/${fault._id}`)}
+                  onClick={() => handleEditFault(fault._id)}
                   disabled={fault.status === "deleted"}
                 >
                   Edit Fault
