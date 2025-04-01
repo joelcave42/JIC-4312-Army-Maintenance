@@ -43,7 +43,7 @@ Develop a web and mobile application that allows operators to log vehicle defici
 
 # Release Notes
 
-## Version 0.4.04 Release Notes
+## Version 0.4.0 Release Notes
 
 ### New Features
 - Implemented functionality to allow supervisors to assign maintainence tasks to maintainers
