@@ -1,8 +1,26 @@
 const express = require("express");
 const router = express.Router();
-const multer = require("multer")
-const path = require("path")
-const { getAllFaults, getPendingFaults, getCompletedFaults, addFault, getFault, updateFault, markFaultInProgress, markFaultAwaitingPart, markFaultCorrected, deleteFault, getOperatorFaults, claimFault, addFaultComment, undoDeleteFault, getFaultImage } = require("../controllers/faults");
+const multer = require("multer");
+const path = require("path");
+const {
+  getAllFaults,
+  getPendingFaults,
+  getCompletedFaults,
+  addFault,
+  getFault,
+  updateFault,
+  markFaultInProgress,
+  markFaultAwaitingPart,
+  markFaultCorrected,
+  deleteFault,
+  getOperatorFaults,
+  claimFault,
+  addFaultComment,
+  undoDeleteFault,
+  getFaultImage,
+  markFaultValidated
+} = require("../controllers/faults");
+
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
@@ -15,6 +33,7 @@ router.route("/:id/image").get(getFaultImage);
 router.route("/pending").get(getPendingFaults);
 router.route("/completed").get(getCompletedFaults);
 router.route("/:id").get(getFault).patch(updateFault).delete(deleteFault);
+router.route("/:id/validated").patch(markFaultValidated);
 router.route("/:id/in-progress").patch(markFaultInProgress);
 router.route("/:id/awaiting-part").patch(markFaultAwaitingPart);
 router.route("/:id/correct").patch(markFaultCorrected);

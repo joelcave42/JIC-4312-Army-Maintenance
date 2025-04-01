@@ -2,8 +2,16 @@ const mongoose = require("mongoose");
 
 // Required schema for fault objects
 const FaultSchema = new mongoose.Schema({
+    vehicleType: {                   // <-- NEW field
+        type: String,
+        required: true
+    },
     vehicleId: {
         type: String,
+        required: true
+    },
+    timelines: {
+        type: [String],
         required: true
     },
     issues: {
@@ -12,7 +20,7 @@ const FaultSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ["pending","in progress", "awaiting part", "completed", "deleted"],
+        enum: ["pending", "validated", "in progress", "awaiting part", "completed", "deleted"],
         default: "pending",
     },
     customIssue: {

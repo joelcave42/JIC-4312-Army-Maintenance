@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import "../styles/FaultSubmissionForm.css";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
@@ -10,8 +10,9 @@ import {
 import { store } from "../store";
 import { toast } from "react-toastify";
 
-const FaultSubmissionForm = () => {
+const FaultSubmissionForm = ({ isReopenMode }) => {
   const navigate = useNavigate();
+  const { faultId } = useParams();
   const { inputValues, username } = useSelector((state) => state.globalValues);
   const dispatch = useDispatch();
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -593,6 +594,36 @@ const FaultSubmissionForm = () => {
   const [selectedFaults, setSelectedFaults] = useState([]);
   const [selectedFaultImages, setSelectedFaultImages] = useState({});
 
+  //useEffect for isReopenMode/faultId here
+  React.useEffect(() => {
+    if (isReopenMode && faultId) {
+      axios
+        .get(`http://localhost:3000/api/v1/faults/${faultId}`)
+        .then(res => {
+          const existingFault = res.data.fault;
+          if (!existingFault) {
+            toast.error("Fault not found");
+            return;
+          }
+          // Pre-populate your states:
+          setSelectedVehicleType(existingFault.vehicleType);
+          setSelectedVehicleId(existingFault.vehicleId);
+          setSelectedTimelines(existingFault.timelines || []);
+          setSelectedFaults(existingFault.issues || []);
+  
+          // If you want to SKIP the “select vehicle type” screens,
+          // jump straight to the final step:
+          setShowVehicleIdSelection(true);
+          setShowTimelineSelection(true);
+          setShowFaultSelection(true);
+        })
+        .catch(err => {
+          console.error(err);
+          toast.error("Failed to load fault for editing");
+        });
+    }
+  }, [isReopenMode, faultId]);
+
   // Combine inspection groups from selected timelines
   const combinedInspectionGroups = useMemo(() => {
     if (!selectedVehicleType || selectedTimelines.length === 0) return [];
@@ -682,54 +713,80 @@ const FaultSubmissionForm = () => {
   };
 
   const handleConfirmSubmit = async () => {
-    try {
-      const url = "http://localhost:3000/api/v1/faults";
+    if (isReopenMode && faultId) {
+      try {
+        const updatedData = {
+          vehicleType: selectedVehicleType,
+          vehicleId: selectedVehicleId,
+          timelines: selectedTimelines,
+          issues: selectedFaults,
+          status: "pending",
+        };
 
-      const submitPromises = selectedFaults.map(async (faultId) => {
-        let faultDetails = null;
-        for (const group of combinedInspectionGroups) {
-          const matchingItem = group.items.find(item => item.id === faultId);
-          if (matchingItem) {
-            faultDetails = { ...matchingItem, groupTitle: group.title };
-            break;
+        await axios.patch(`http://localhost:3000/api/v1/faults/${faultId}`, updatedData);
+
+        toast.success("Fault updated successfully!");
+        navigate("/operator-faults");
+      } catch (error) {
+        console.error("Error updating fault:", error);
+        toast.error("Error updating fault: " + error.message);
+      }
+    } else {
+      try {
+        const url = "http://localhost:3000/api/v1/faults";
+
+        const submitPromises = selectedFaults.map(async (faultId) => {
+          let faultDetails = null;
+
+          for (const group of combinedInspectionGroups) {
+            const match = group.items.find((item) => item.id === faultId);
+            if (match) {
+              faultDetails = { ...match, groupTitle: group.title };
+              break;
+            }
           }
-        }
 
-        if (!faultDetails) return;
+          if (!faultDetails) {
+            console.error(`Fault with ID ${faultId} not found`);
+            return null;
+          }
 
-        const formData = new FormData();
-        formData.append("vehicleType", selectedVehicleType);
-        formData.append("vehicleId", selectedVehicleId);
-        formData.append("issues[]", faultId);
-        formData.append("createdBy", localStorage.getItem("username"));
-        selectedTimelines.forEach(t => formData.append("timelines[]", t));
-        if (selectedFaultImages[faultId]) {
-          formData.append("image", selectedFaultImages[faultId]);
-        }
+          const formData = new FormData();
+          formData.append("vehicleType", selectedVehicleType);
+          formData.append("vehicleId", selectedVehicleId);
+          formData.append("issues[]", faultId);
+          formData.append("createdBy", localStorage.getItem("username"));
+          selectedTimelines.forEach((t) => formData.append("timelines[]", t));
 
-        return axios.post(url, formData, {
-          headers: { "Content-Type": "multipart/form-data" }
+          if (selectedFaultImages[faultId]) {
+            formData.append("image", selectedFaultImages[faultId]);
+          }
+
+          return axios.post(url, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
         });
-      });
 
-      await Promise.all(submitPromises);
+        await Promise.all(submitPromises);
 
-      store.dispatch(changeStatusListener());
-      setSelectedFaults([]);
-      setSelectedFaultImages({});
-      setShowFaultSelection(false);
-      setShowTimelineSelection(false);
-      setShowVehicleIdSelection(false);
-      setSelectedTimelines([]);
-      setSelectedVehicleId("");
-      setSelectedVehicleType("");
-      setShowConfirmation(false);
-      toast.success("Fault submissions successful!");
-    } catch (error) {
-      console.error("Error details:", error);
-      toast.error("Error submitting faults: " + error.message);
+        store.dispatch(changeStatusListener());
+        setSelectedFaults([]);
+        setSelectedFaultImages({});
+        setShowFaultSelection(false);
+        setShowTimelineSelection(false);
+        setShowVehicleIdSelection(false);
+        setSelectedTimelines([]);
+        setSelectedVehicleId("");
+        setSelectedVehicleType("");
+        setShowConfirmation(false);
+        toast.success("Fault submissions successful!");
+      } catch (error) {
+        console.error("Error details:", error);
+        toast.error("Error submitting faults: " + error.message);
+      }
     }
   };
+  
 
   // Group faults by their inspection group
   const groupedFaults = useMemo(() => {
@@ -767,23 +824,31 @@ const FaultSubmissionForm = () => {
   return (
     <div className="fault-submission-main">
       <button className="back-button" onClick={handleBack}>
-        {showFaultSelection ? "Back to Timeline Selection" : 
-         showTimelineSelection ? "Back to Vehicle Selection" : 
-         showVehicleIdSelection ? "Back to Vehicle Type Selection" : "Back"}
+        {showFaultSelection
+          ? "Back to Timeline Selection"
+          : showTimelineSelection
+          ? "Back to Vehicle Selection"
+          : showVehicleIdSelection
+          ? "Back to Vehicle Type Selection"
+          : "Back"}
       </button>
   
       {/* Vehicle Type Selection */}
       {!showVehicleIdSelection && (
         <div className="vehicle-selection">
           <h1 className="vehicle-selection-title">Select Vehicle Type</h1>
-          <p className="vehicle-selection-subtitle">Choose the vehicle platform you want to perform maintenance on</p>
+          <p className="vehicle-selection-subtitle">
+            Choose the vehicle platform you want to perform maintenance on
+          </p>
           <div className="vehicle-grid">
             {Object.entries(vehicleTypes)
               .sort(([, a], [, b]) => a.name.localeCompare(b.name))
               .map(([typeKey, type]) => (
                 <button
                   key={typeKey}
-                  className={`vehicle-button ${selectedVehicleType === typeKey ? 'selected' : ''}`}
+                  className={`vehicle-button ${
+                    selectedVehicleType === typeKey ? "selected" : ""
+                  }`}
                   onClick={() => handleVehicleTypeSelect(typeKey)}
                 >
                   {type.name}
@@ -801,13 +866,15 @@ const FaultSubmissionForm = () => {
         <div className="vehicle-selection">
           <h1 className="vehicle-selection-title">Select Specific Vehicle</h1>
           <p className="vehicle-selection-subtitle">
-            Choose the specific {vehicleTypes[selectedVehicleType].name} you want to perform maintenance on
+            Choose the specific {vehicleTypes[selectedVehicleType]?.name || "vehicle"} you want to perform maintenance on
           </p>
           <div className="vehicle-grid">
-            {vehicleIds[selectedVehicleType].map(vehicle => (
+            {vehicleIds[selectedVehicleType]?.map((vehicle) => (
               <button
                 key={vehicle.id}
-                className={`vehicle-button ${selectedVehicleId === vehicle.id ? 'selected' : ''}`}
+                className={`vehicle-button ${
+                  selectedVehicleId === vehicle.id ? "selected" : ""
+                }`}
                 onClick={() => handleVehicleIdSelect(vehicle.id)}
               >
                 {vehicle.name}
@@ -824,108 +891,196 @@ const FaultSubmissionForm = () => {
       {showTimelineSelection && !showFaultSelection && (
         <div className="timeline-selection">
           <h1 className="form-title">Select Maintenance Timeline(s)</h1>
-          <p className="timeline-selection-title">Select one or more timelines to perform maintenance on</p>
+          <p className="timeline-selection-title">
+            Select one or more timelines to perform maintenance on
+          </p>
           <div className="timeline-grid">
-            {Object.values(vehicleTypes[selectedVehicleType].timelines).map((timeline) => (
-              <button
-                key={timeline.id}
-                className={`timeline-button ${selectedTimelines.includes(timeline.id) ? 'selected' : ''}`}
-                onClick={() => handleTimelineSelect(timeline.id)}
-              >
-                {timeline.name}
-              </button>
-            ))}
+            {Object.values(vehicleTypes[selectedVehicleType]?.timelines || {}).map(
+              (timeline) => (
+                <button
+                  key={timeline.id}
+                  className={`timeline-button ${
+                    selectedTimelines.includes(timeline.id) ? "selected" : ""
+                  }`}
+                  onClick={() => handleTimelineSelect(timeline.id)}
+                >
+                  {timeline.name}
+                </button>
+              )
+            )}
           </div>
           <div className="selected-timelines">
-            Selected: {selectedTimelines.map(t => vehicleTypes[selectedVehicleType].timelines[t].name).join(", ")}
+            Selected:{" "}
+            {selectedTimelines
+              .map(
+                (t) => vehicleTypes[selectedVehicleType]?.timelines[t]?.name
+              )
+              .join(", ")}
           </div>
           <button className="next-button" onClick={handleNextFromTimeline}>
             Start PMCS
           </button>
         </div>
       )}
-  
       {/* Fault Selection Form */}
       {showFaultSelection && (
         <form className="fault-submission-form" onSubmit={handleSubmit}>
           <div className="vehicle-id-box">
-            <div>Vehicle Type: {vehicleTypes[selectedVehicleType].name}</div>
+            <div>
+              Vehicle Type:{" "}
+              {vehicleTypes[selectedVehicleType]?.name || "Unknown Vehicle Type"}
+            </div>
             <div>Vehicle ID: {getSelectedVehicleName()}</div>
             <div className="timeline-info">
-              Maintenance: {selectedTimelines.map(t => vehicleTypes[selectedVehicleType].timelines[t].name).join(" + ")}
+              Maintenance:{" "}
+              {selectedTimelines
+                .map(
+                  (t) => vehicleTypes[selectedVehicleType]?.timelines[t]?.name
+                )
+                .join(" + ")}
             </div>
           </div>
+
           <h1 className="form-title">PMCS Walkthrough</h1>
           <div className="fault-selection-container">
             <div className="inspection-groups">
               {combinedInspectionGroups.map((group, groupIndex) => (
                 <div key={groupIndex} className="inspection-group">
                   <h3 className="group-title">{group.title}</h3>
-                  {group.disclaimers && group.disclaimers.map((disclaimer, index) => (
-                    <div key={index} className="group-disclaimer">{disclaimer}</div>
-                  ))}
-                  {group.items.map((item) => (
+
+                  {group.disclaimers &&
+                    group.disclaimers.map((disclaimer, index) => (
+                      <div key={index} className="group-disclaimer">
+                        {disclaimer}
+                      </div>
+                    ))}
+
+                  {group.items.map((item, itemIndex) => (
                     <div key={item.id} className="inspection-item">
                       <label className="item-label">
-                        <input
-                          type="checkbox"
-                          checked={selectedFaults.includes(item.id)}
-                          onChange={() => handleCheckboxChange(item.id)}
-                        />
-                        <span dangerouslySetInnerHTML={{ __html: item.procedure }} />
-                      </label>
-                      {item.criteria && (
-                        <div className="criteria">
-                          <span className="criteria-label">NOT FULLY MISSION CAPABLE IF: </span>
-                          {item.criteria}
+                        <div className="item-header">
+                          <input
+                            type="checkbox"
+                            checked={selectedFaults.includes(item.id)}
+                            onChange={() => handleCheckboxChange(item.id)}
+                          />
+                          <span className="item-letter">
+                            {item.id.includes("_e1")
+                              ? "e.1"
+                              : item.id.includes("_f")
+                              ? "f"
+                              : item.id.includes("_g")
+                              ? "g"
+                              : item.id.includes("_d1")
+                              ? "d.1"
+                              : item.id.includes("_d")
+                              ? "d"
+                              : item.id.includes("_e")
+                              ? "e"
+                              : item.id.includes("_a")
+                              ? "a"
+                              : item.id.includes("_b")
+                              ? "b"
+                              : item.id.includes("_c")
+                              ? "c"
+                              : item.id.includes("_h")
+                              ? "h"
+                              : item.id.includes("_i")
+                              ? "i"
+                              : item.id.includes("_j")
+                              ? "j"
+                              : item.id.includes("_k")
+                              ? "k"
+                              : item.id.includes("_l")
+                              ? "l"
+                              : item.id.includes("_m")
+                              ? "m"
+                              : item.id.includes("_n")
+                              ? "n"
+                              : item.id.includes("_o")
+                              ? "o"
+                              : item.id.includes("_p")
+                              ? "p"
+                              : String.fromCharCode(97 + itemIndex)}
+                          </span>
                         </div>
-                      )}
-                      {selectedFaults.includes(item.id) && (
-                        <div className="image-upload">
-                          <label>
-                            Upload Image (optional):
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleImageChange(e, item.id)}
-                            />
-                          </label>
-                          {selectedFaultImages[item.id] && (
-                            <div className="selected-image-preview">
+
+                        <div className="item-content">
+                          <div
+                            className="procedure"
+                            dangerouslySetInnerHTML={{ __html: item.procedure }}
+                          />
+
+                          {item.criteria && (
+                            <div className="criteria">
+                              <span className="criteria-label">
+                                NOT FULLY MISSION CAPABLE IF:{" "}
+                              </span>
+                              {item.criteria.replace(
+                                "NOT FULLY MISSION CAPABLE IF: ",
+                                ""
+                              )}
+                            </div>
+                          )}
+
+                          {item.image && (
+                            <div className="item-image">
                               <img
-                                src={URL.createObjectURL(selectedFaultImages[item.id])}
-                                alt="Preview"
-                                className="image-thumb"
+                                src={item.image}
+                                alt={`Illustration for ${item.procedure}`}
                               />
-                              <div className="image-controls">
-                                <span>{selectedFaultImages[item.id].name}</span>
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    setSelectedFaultImages((prev) => {
-                                      const updated = { ...prev };
-                                      delete updated[item.id];
-                                      return updated;
-                                    })
-                                  }
-                                >
-                                  Remove Image
-                                </button>
-                              </div>
+                            </div>
+                          )}
+
+                          {selectedFaults.includes(item.id) && (
+                            <div className="image-upload">
+                              <label>
+                                Upload Image (optional):
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={(e) => handleImageChange(e, item.id)}
+                                />
+                              </label>
+
+                              {selectedFaultImages[item.id] && (
+                                <div className="selected-image-preview">
+                                  <img
+                                    src={URL.createObjectURL(selectedFaultImages[item.id])}
+                                    alt="Preview"
+                                    className="image-thumb"
+                                  />
+                                  <div className="image-controls">
+                                    <span>{selectedFaultImages[item.id].name}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        setSelectedFaultImages((prev) => {
+                                          const updated = { ...prev };
+                                          delete updated[item.id];
+                                          return updated;
+                                        })
+                                      }
+                                    >
+                                      Remove Image
+                                    </button>
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           )}
                         </div>
-                      )}
+                      </label>
                     </div>
                   ))}
                 </div>
               ))}
             </div>
           </div>
+
           <button type="submit" className="form-submit">Verify and Submit</button>
         </form>
       )}
-  
       {/* Confirmation Modal */}
       {showConfirmation && (
         <div className="modal-overlay">
@@ -933,18 +1088,31 @@ const FaultSubmissionForm = () => {
             <h2 className="modal-title">Confirm PMCS Submission</h2>
             <div className="modal-content">
               <div className="modal-vehicle-info">
-                <div className="vehicle-type">{vehicleTypes[selectedVehicleType].name}</div>
+                <div className="vehicle-type">
+                  {vehicleTypes[selectedVehicleType]?.name ||
+                    "Unknown Vehicle Type"}
+                </div>
                 <div className="vehicle-name">{getSelectedVehicleName()}</div>
-                <div>Maintenance: {selectedTimelines.map(t => vehicleTypes[selectedVehicleType].timelines[t].name).join(" + ")}</div>
+                <div>
+                  Maintenance:{" "}
+                  {selectedTimelines
+                    .map(
+                      (t) =>
+                        vehicleTypes[selectedVehicleType]?.timelines[t]?.name
+                    )
+                    .join(" + ")}
+                </div>
                 <div>Total Issues: {selectedFaults.length}</div>
-                <div className="modal-username">Submitted by: {username || 'Not logged in'}</div>
+                <div className="modal-username">
+                  Submitted by: {username || "Not logged in"}
+                </div>
               </div>
   
               <div className="modal-faults">
                 {Object.entries(groupedFaults).map(([groupTitle, faults]) => (
                   <div key={groupTitle} className="modal-fault-group">
                     <h3 className="modal-fault-group-title">{groupTitle}</h3>
-                    {faults.map(fault => (
+                    {faults.map((fault) => (
                       <div key={fault.id} className="modal-fault-item">
                         <div className="procedure" dangerouslySetInnerHTML={{ __html: fault.procedure }} />
                         {fault.criteria && (
@@ -967,12 +1135,17 @@ const FaultSubmissionForm = () => {
                   </div>
                 ))}
               </div>
-  
               <div className="modal-buttons">
-                <button className="modal-button modal-cancel" onClick={() => setShowConfirmation(false)}>
+                <button
+                  className="modal-button modal-cancel"
+                  onClick={() => setShowConfirmation(false)}
+                >
                   Cancel
                 </button>
-                <button className="modal-button modal-confirm" onClick={handleConfirmSubmit}>
+                <button
+                  className="modal-button modal-confirm"
+                  onClick={handleConfirmSubmit}
+                >
                   Confirm Submission
                 </button>
               </div>
@@ -981,7 +1154,7 @@ const FaultSubmissionForm = () => {
         </div>
       )}
     </div>
-  );  
+  );
 };  
 
 export default FaultSubmissionForm;
