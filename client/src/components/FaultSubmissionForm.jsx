@@ -592,6 +592,7 @@ const FaultSubmissionForm = ({ isReopenMode }) => {
   const [showFaultSelection, setShowFaultSelection] = useState(false);
   const [selectedTimelines, setSelectedTimelines] = useState([]);
   const [selectedFaults, setSelectedFaults] = useState([]);
+  const [selectedFaultImages, setSelectedFaultImages] = useState({});
 
   //useEffect for isReopenMode/faultId here
   React.useEffect(() => {
@@ -678,11 +679,31 @@ const FaultSubmissionForm = ({ isReopenMode }) => {
   };
 
   const handleCheckboxChange = (itemId) => {
-    setSelectedFaults((prevSelected) =>
-      prevSelected.includes(itemId)
+    setSelectedFaults((prevSelected) => {
+      const updated = prevSelected.includes(itemId)
         ? prevSelected.filter((id) => id !== itemId)
-        : [...prevSelected, itemId]
-    );
+        : [...prevSelected, itemId];
+
+      setSelectedFaultImages((prevImages) => {
+        const updatedImages = { ...prevImages };
+        if (!updated.includes(itemId)) {
+          delete updatedImages[itemId];
+        }
+        return updatedImages;
+      });
+
+      return updated;
+    });
+  };
+
+  const handleImageChange = (e, faultId) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFaultImages((prev) => ({
+        ...prev,
+        [faultId]: file,
+      }));
+    }
   };
 
   // Submit handler
@@ -692,68 +713,65 @@ const FaultSubmissionForm = ({ isReopenMode }) => {
   };
 
   const handleConfirmSubmit = async () => {
-    // Check if we're reopening/editing an existing fault
     if (isReopenMode && faultId) {
-      // REOPEN/EDIT MODE: Do one PATCH to update the existing fault
       try {
         const updatedData = {
           vehicleType: selectedVehicleType,
           vehicleId: selectedVehicleId,
           timelines: selectedTimelines,
           issues: selectedFaults,
-          status: "pending", // or "reopened", etc.
+          status: "pending",
         };
-        
-        // Since your server uses PATCH for updating:
+
         await axios.patch(`http://localhost:3000/api/v1/faults/${faultId}`, updatedData);
-  
+
         toast.success("Fault updated successfully!");
-        navigate("/operator-faults"); // or wherever you want to redirect
+        navigate("/operator-faults");
       } catch (error) {
         console.error("Error updating fault:", error);
         toast.error("Error updating fault: " + error.message);
       }
     } else {
-      // NEW SUBMISSION MODE: the existing multi-POST code
       try {
         const url = "http://localhost:3000/api/v1/faults";
-  
+
         const submitPromises = selectedFaults.map(async (faultId) => {
-          // Find the fault details
           let faultDetails = null;
-  
+
           for (const group of combinedInspectionGroups) {
-            const matchingItem = group.items.find(item => item.id === faultId);
-            if (matchingItem) {
-              faultDetails = {
-                ...matchingItem,
-                groupTitle: group.title
-              };
+            const match = group.items.find((item) => item.id === faultId);
+            if (match) {
+              faultDetails = { ...match, groupTitle: group.title };
               break;
             }
           }
-  
+
           if (!faultDetails) {
             console.error(`Fault with ID ${faultId} not found`);
             return null;
           }
-  
-          // Submit with both vehicle type and specific ID
-          const faultData = {
-            vehicleType: selectedVehicleType,
-            vehicleId: selectedVehicleId,
-            issues: [faultId],
-            createdBy: localStorage.getItem("username"),
-            timelines: selectedTimelines,
-          };
-  
-          return axios.post(url, faultData);
+
+          const formData = new FormData();
+          formData.append("vehicleType", selectedVehicleType);
+          formData.append("vehicleId", selectedVehicleId);
+          formData.append("issues[]", faultId);
+          formData.append("createdBy", localStorage.getItem("username"));
+          selectedTimelines.forEach((t) => formData.append("timelines[]", t));
+
+          if (selectedFaultImages[faultId]) {
+            formData.append("image", selectedFaultImages[faultId]);
+          }
+
+          return axios.post(url, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
         });
-  
+
         await Promise.all(submitPromises);
-  
+
         store.dispatch(changeStatusListener());
         setSelectedFaults([]);
+        setSelectedFaultImages({});
         setShowFaultSelection(false);
         setShowTimelineSelection(false);
         setShowVehicleIdSelection(false);
@@ -814,7 +832,7 @@ const FaultSubmissionForm = ({ isReopenMode }) => {
           ? "Back to Vehicle Type Selection"
           : "Back"}
       </button>
-      
+  
       {/* Vehicle Type Selection */}
       {!showVehicleIdSelection && (
         <div className="vehicle-selection">
@@ -842,14 +860,13 @@ const FaultSubmissionForm = ({ isReopenMode }) => {
           </button>
         </div>
       )}
-      
+  
       {/* Specific Vehicle ID Selection */}
       {showVehicleIdSelection && !showTimelineSelection && (
         <div className="vehicle-selection">
           <h1 className="vehicle-selection-title">Select Specific Vehicle</h1>
           <p className="vehicle-selection-subtitle">
-            Choose the specific{" "}
-            {vehicleTypes[selectedVehicleType]?.name || "vehicle"} you want to perform maintenance on
+            Choose the specific {vehicleTypes[selectedVehicleType]?.name || "vehicle"} you want to perform maintenance on
           </p>
           <div className="vehicle-grid">
             {vehicleIds[selectedVehicleType]?.map((vehicle) => (
@@ -869,7 +886,7 @@ const FaultSubmissionForm = ({ isReopenMode }) => {
           </button>
         </div>
       )}
-      
+  
       {/* Timeline Selection */}
       {showTimelineSelection && !showFaultSelection && (
         <div className="timeline-selection">
@@ -905,7 +922,6 @@ const FaultSubmissionForm = ({ isReopenMode }) => {
           </button>
         </div>
       )}
-      
       {/* Fault Selection Form */}
       {showFaultSelection && (
         <form className="fault-submission-form" onSubmit={handleSubmit}>
@@ -919,24 +935,26 @@ const FaultSubmissionForm = ({ isReopenMode }) => {
               Maintenance:{" "}
               {selectedTimelines
                 .map(
-                  (t) =>
-                    vehicleTypes[selectedVehicleType]?.timelines[t]?.name
+                  (t) => vehicleTypes[selectedVehicleType]?.timelines[t]?.name
                 )
                 .join(" + ")}
             </div>
           </div>
+
           <h1 className="form-title">PMCS Walkthrough</h1>
           <div className="fault-selection-container">
             <div className="inspection-groups">
               {combinedInspectionGroups.map((group, groupIndex) => (
                 <div key={groupIndex} className="inspection-group">
                   <h3 className="group-title">{group.title}</h3>
+
                   {group.disclaimers &&
                     group.disclaimers.map((disclaimer, index) => (
                       <div key={index} className="group-disclaimer">
                         {disclaimer}
                       </div>
                     ))}
+
                   {group.items.map((item, itemIndex) => (
                     <div key={item.id} className="inspection-item">
                       <label className="item-label">
@@ -986,11 +1004,13 @@ const FaultSubmissionForm = ({ isReopenMode }) => {
                               : String.fromCharCode(97 + itemIndex)}
                           </span>
                         </div>
+
                         <div className="item-content">
                           <div
                             className="procedure"
                             dangerouslySetInnerHTML={{ __html: item.procedure }}
-                          ></div>
+                          />
+
                           {item.criteria && (
                             <div className="criteria">
                               <span className="criteria-label">
@@ -1002,12 +1022,51 @@ const FaultSubmissionForm = ({ isReopenMode }) => {
                               )}
                             </div>
                           )}
+
                           {item.image && (
                             <div className="item-image">
                               <img
                                 src={item.image}
                                 alt={`Illustration for ${item.procedure}`}
                               />
+                            </div>
+                          )}
+
+                          {selectedFaults.includes(item.id) && (
+                            <div className="image-upload">
+                              <label>
+                                Upload Image (optional):
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={(e) => handleImageChange(e, item.id)}
+                                />
+                              </label>
+
+                              {selectedFaultImages[item.id] && (
+                                <div className="selected-image-preview">
+                                  <img
+                                    src={URL.createObjectURL(selectedFaultImages[item.id])}
+                                    alt="Preview"
+                                    className="image-thumb"
+                                  />
+                                  <div className="image-controls">
+                                    <span>{selectedFaultImages[item.id].name}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        setSelectedFaultImages((prev) => {
+                                          const updated = { ...prev };
+                                          delete updated[item.id];
+                                          return updated;
+                                        })
+                                      }
+                                    >
+                                      Remove Image
+                                    </button>
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           )}
                         </div>
@@ -1018,12 +1077,10 @@ const FaultSubmissionForm = ({ isReopenMode }) => {
               ))}
             </div>
           </div>
-          <button type="submit" className="form-submit">
-            Verify and Submit
-          </button>
+
+          <button type="submit" className="form-submit">Verify and Submit</button>
         </form>
       )}
-      
       {/* Confirmation Modal */}
       {showConfirmation && (
         <div className="modal-overlay">
@@ -1050,26 +1107,27 @@ const FaultSubmissionForm = ({ isReopenMode }) => {
                   Submitted by: {username || "Not logged in"}
                 </div>
               </div>
-              
+  
               <div className="modal-faults">
                 {Object.entries(groupedFaults).map(([groupTitle, faults]) => (
                   <div key={groupTitle} className="modal-fault-group">
                     <h3 className="modal-fault-group-title">{groupTitle}</h3>
                     {faults.map((fault) => (
                       <div key={fault.id} className="modal-fault-item">
-                        <div
-                          className="procedure"
-                          dangerouslySetInnerHTML={{ __html: fault.procedure }}
-                        ></div>
+                        <div className="procedure" dangerouslySetInnerHTML={{ __html: fault.procedure }} />
                         {fault.criteria && (
                           <div className="criteria">
-                            <span className="criteria-label">
-                              NOT FULLY MISSION CAPABLE IF:{" "}
-                            </span>
-                            {fault.criteria.replace(
-                              "NOT FULLY MISSION CAPABLE IF: ",
-                              ""
-                            )}
+                            <span className="criteria-label">NOT FULLY MISSION CAPABLE IF: </span>
+                            {fault.criteria}
+                          </div>
+                        )}
+                        {selectedFaultImages[fault.id] && (
+                          <div className="modal-image-preview">
+                            <img
+                              src={URL.createObjectURL(selectedFaultImages[fault.id])}
+                              alt="Uploaded preview"
+                              className="image-thumb"
+                            />
                           </div>
                         )}
                       </div>
@@ -1077,7 +1135,6 @@ const FaultSubmissionForm = ({ isReopenMode }) => {
                   </div>
                 ))}
               </div>
-    
               <div className="modal-buttons">
                 <button
                   className="modal-button modal-cancel"

@@ -1,12 +1,35 @@
 const express = require("express");
 const router = express.Router();
-const { getAllFaults, getPendingFaults, getCompletedFaults, addFault, getFault, updateFault, markFaultInProgress, markFaultAwaitingPart, markFaultCorrected, deleteFault, getOperatorFaults, claimFault, addFaultComment, undoDeleteFault, markFaultValidated } = require("../controllers/faults");
+const multer = require("multer");
+const path = require("path");
+const {
+  getAllFaults,
+  getPendingFaults,
+  getCompletedFaults,
+  addFault,
+  getFault,
+  updateFault,
+  markFaultInProgress,
+  markFaultAwaitingPart,
+  markFaultCorrected,
+  deleteFault,
+  getOperatorFaults,
+  claimFault,
+  addFaultComment,
+  undoDeleteFault,
+  getFaultImage,
+  markFaultValidated
+} = require("../controllers/faults");
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
 // Add this console log to see all routes being registered
 console.log('Registering fault routes...');
 
 router.route("/operator/:username").get(getOperatorFaults);
-router.route("/").get(getAllFaults).post(addFault);
+router.route("/").get(getAllFaults).post(upload.single("image"), addFault);
+router.route("/:id/image").get(getFaultImage);
 router.route("/pending").get(getPendingFaults);
 router.route("/completed").get(getCompletedFaults);
 router.route("/:id").get(getFault).patch(updateFault).delete(deleteFault);
