@@ -10,6 +10,7 @@ import { changeStatusListener } from "../features/globalValues/globalSlice"; // 
 
 const ClaimFaults = () => {
   const [pendingFaults, setPendingFaults] = useState([]);
+  const [imageUrls, setImageUrls] = useState({});
   const navigate = useNavigate();
 
   // We'll fetch from the same base URL as in FaultList
@@ -29,12 +30,26 @@ const ClaimFaults = () => {
         // Filter out any faults that are already claimed
         const availableFaults = data.faults.filter(fault => !fault.isClaimed);
         setPendingFaults(availableFaults);
+        availableFaults.forEach((fault) => fetchImageForFault(fault._id));
       }
     } catch (error) {
       console.error("Error fetching faults:", error);
       toast.error("Failed to fetch pending faults");
     }
   };
+
+  const fetchImageForFault = async (faultId) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/api/v1/faults/${faultId}/image`,
+        { responseType: "blob" }
+      );
+      const imageURL = URL.createObjectURL(response.data);
+      setImageUrls((prev) => ({ ...prev, [faultId]: imageURL }));
+    } catch (error) {
+      console.warn(`No image for fault ${faultId}`);
+    }
+  };  
 
   const claimFault = async (faultID) => {
     try {
@@ -103,6 +118,16 @@ const ClaimFaults = () => {
                   </li>
                 ))}
               </ul>
+              {imageUrls[fault._id] && (
+                <div className="fault-image-preview">
+                    <img
+                    src={imageUrls[fault._id]}
+                    alt="Fault visual"
+                    className="preview-img"
+                    style={{ maxWidth: "100%", maxHeight: "200px", margin: "10px 0" }}
+                    />
+                </div>
+              )}
               <div className="fault-actions">
                 <button
                   onClick={() => claimFault(fault._id)}
