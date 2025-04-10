@@ -9,7 +9,7 @@ const HomeScreen = ({ userType }) => {
 
   useEffect(() => {
     // Only for operator users, check for newly arrived parts
-    if (userType === "operator") {
+    if (["operator", "manager"].includes(userType)) {
       fetchNewArrivals();
     }
   }, [userType]);

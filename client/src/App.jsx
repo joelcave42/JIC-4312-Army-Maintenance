@@ -131,14 +131,14 @@ function App() {
               <Route path="/claimed-faults" element={<ClaimedFaults />} />
 
               {/* Supervisor Route */}
-              {userType === "supervisor" && (
+              {(userType === "supervisor" || userType === "manager") && (
                 <>
                   <Route path="/supervisor-dashboard" element={<SupervisorDashboard />} />
                   <Route path="/assign-faults" element={<AssignFaults />} />
                 </>
               )}
               {/* Clerk Only Route */}
-              {userType === "clerk" && (
+              {(userType === "clerk" || userType === "manager") && (
                 <>
                   <Route path="/ordered-parts" element={<OrderedParts />} />
                   <Route path="/inventory-management" element={<InventoryManagement />} />

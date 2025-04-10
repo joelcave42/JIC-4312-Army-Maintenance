@@ -44,10 +44,31 @@ const Menu = ({ userType }) => {
       {normalizedUserType === "manager" && (
         <>
           <button onClick={() => navigate("/fault-submission")}>
-            
+            Start 5988
           </button>
           <button onClick={() => navigate("/fault-list")}>
             Check Reported Faults
+          </button>
+          <button onClick={() => navigate("/ordered-parts")}>
+            Ordered Parts
+          </button>
+          <button onClick={() => navigate("/inventory-management")}>
+            Inventory Management
+          </button>
+          <button onClick={() => navigate("/claim-faults")}>
+            Claim Faults
+          </button>
+          <button onClick={() => navigate("/claimed-faults")}>
+            Claimed Faults
+          </button>
+          <button onClick={() => navigate("/operator-faults")}>
+            My Fault Submissions & Parts
+          </button>
+          <button onClick={() => navigate("/supervisor-dashboard")}>
+            Supervisor Dashboard
+          </button>
+          <button onClick={() => navigate("/assign-faults")}>
+            Assign Faults for Maintainers
           </button>
         </>
       )}
