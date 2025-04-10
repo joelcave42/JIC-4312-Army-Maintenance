@@ -134,6 +134,7 @@ const OperatorFaultList = () => {
                     src={imageUrls[fault._id]}
                     alt="Fault visual"
                     className="preview-img"
+                    style={{ maxWidth: "100%", maxHeight: "200px", margin: "10px 0" }}
                   />
                 </div>
               )}
