@@ -593,6 +593,7 @@ const FaultSubmissionForm = ({ isReopenMode }) => {
   const [selectedTimelines, setSelectedTimelines] = useState([]);
   const [selectedFaults, setSelectedFaults] = useState([]);
   const [selectedFaultImages, setSelectedFaultImages] = useState({});
+  const [faultSeverities, setFaultSeverities] = useState({});
 
   //useEffect for isReopenMode/faultId here
   React.useEffect(() => {
@@ -611,7 +612,7 @@ const FaultSubmissionForm = ({ isReopenMode }) => {
           setSelectedTimelines(existingFault.timelines || []);
           setSelectedFaults(existingFault.issues || []);
   
-          // If you want to SKIP the “select vehicle type” screens,
+          // If you want to SKIP the "select vehicle type" screens,
           // jump straight to the final step:
           setShowVehicleIdSelection(true);
           setShowTimelineSelection(true);
@@ -692,8 +693,24 @@ const FaultSubmissionForm = ({ isReopenMode }) => {
         return updatedImages;
       });
 
+      // Update fault severities when unchecking an item
+      if (!updated.includes(itemId)) {
+        setFaultSeverities((prev) => {
+          const updated = { ...prev };
+          delete updated[itemId];
+          return updated;
+        });
+      }
+
       return updated;
     });
+  };
+
+  const handleSeverityChange = (faultId, severity) => {
+    setFaultSeverities((prev) => ({
+      ...prev,
+      [faultId]: severity
+    }));
   };
 
   const handleImageChange = (e, faultId) => {
@@ -719,7 +736,10 @@ const FaultSubmissionForm = ({ isReopenMode }) => {
           vehicleType: selectedVehicleType,
           vehicleId: selectedVehicleId,
           timelines: selectedTimelines,
-          issues: selectedFaults,
+          issues: selectedFaults.map(faultId => {
+            const severity = faultSeverities[faultId] || 'X';
+            return `${severity} - ${faultId}`;
+          }),
           status: "pending",
         };
 
@@ -754,7 +774,11 @@ const FaultSubmissionForm = ({ isReopenMode }) => {
           const formData = new FormData();
           formData.append("vehicleType", selectedVehicleType);
           formData.append("vehicleId", selectedVehicleId);
-          formData.append("issues[]", faultId);
+          
+          // Include severity in the issue string
+          const severity = faultSeverities[faultId] || 'X';
+          formData.append("issues[]", `${severity} - ${faultId}`);
+          
           formData.append("createdBy", localStorage.getItem("username"));
           selectedTimelines.forEach((t) => formData.append("timelines[]", t));
 
@@ -1069,6 +1093,28 @@ const FaultSubmissionForm = ({ isReopenMode }) => {
                               )}
                             </div>
                           )}
+
+                          {selectedFaults.includes(item.id) && (
+                            <div className="fault-severity">
+                              <div className="severity-label">Fault Severity:</div>
+                              <div className="severity-options">
+                                <button
+                                  type="button"
+                                  className={`severity-button ${faultSeverities[item.id] === 'X' ? 'selected' : ''}`}
+                                  onClick={() => handleSeverityChange(item.id, 'X')}
+                                >
+                                  X (Non-Mission Capable)
+                                </button>
+                                <button
+                                  type="button"
+                                  className={`severity-button ${faultSeverities[item.id] === '/' ? 'selected' : ''}`}
+                                  onClick={() => handleSeverityChange(item.id, '/')}
+                                >
+                                  / (Deficiency)
+                                </button>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </label>
                     </div>
@@ -1121,6 +1167,10 @@ const FaultSubmissionForm = ({ isReopenMode }) => {
                             {fault.criteria}
                           </div>
                         )}
+                        <div className="modal-fault-severity">
+                          <span className="severity-label">Severity: </span>
+                          <span className="severity-value">{faultSeverities[fault.id] === 'X' ? 'X (Non-Mission Capable)' : faultSeverities[fault.id] === '/' ? '/ (Deficiency)' : 'X (Non-Mission Capable)'}</span>
+                        </div>
                         {selectedFaultImages[fault.id] && (
                           <div className="modal-image-preview">
                             <img

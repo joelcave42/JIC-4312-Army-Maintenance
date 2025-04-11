@@ -556,3 +556,62 @@
   background-color: #1f271f;
   transform: translateY(-2px);
 }
+
+.fault-severity {
+  margin-top: 15px;
+  padding: 10px;
+  background-color: rgba(255, 195, 23, 0.1);
+  border-radius: 4px;
+}
+
+.severity-label {
+  font-weight: bold;
+  color: #ffc317;
+  margin-bottom: 8px;
+}
+
+.severity-options {
+  display: flex;
+  gap: 10px;
+}
+
+.severity-button {
+  flex: 1;
+  padding: 8px 12px;
+  border: 2px solid #ffc317;
+  border-radius: 4px;
+  background-color: transparent;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.severity-button:hover {
+  background-color: rgba(255, 195, 23, 0.2);
+}
+
+.severity-button.selected {
+  background-color: #ffc317;
+  color: #2a362a;
+  font-weight: bold;
+}
+
+.modal-fault-severity {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background-color: rgba(255, 195, 23, 0.15);
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.modal-fault-severity .severity-label {
+  margin-bottom: 0;
+}
+
+.severity-value {
+  font-weight: bold;
+}

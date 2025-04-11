@@ -21,6 +21,7 @@ const OperatorFaultList = () => {
         `http://localhost:3000/api/v1/faults/operator/${username}`
       );
       const faultData = response.data.faults;
+      console.log("Fault data structure:", faultData[0]);  // Debug log
       setFaults(faultData);
 
       faultData.forEach((fault) => {
@@ -105,11 +106,23 @@ const OperatorFaultList = () => {
 
               <p className="fault-issues">Issues:</p>
               <ul className="issues-list">
-                {fault.issues.map((issue, index) => (
-                  <li key={index} className="issue-item">
-                    {issue}
-                  </li>
-                ))}
+                {fault.issues.map((issue, index) => {
+                  // Check if issue string follows the format "X - faultId" or "/ - faultId"
+                  const isSeverityFormat = issue.match(/^([X/]) - (.+)$/);
+                  const severity = isSeverityFormat ? isSeverityFormat[1] : null;
+                  const issueText = isSeverityFormat ? isSeverityFormat[2] : issue;
+                  
+                  return (
+                    <li key={index} className="issue-item">
+                      {issueText}
+                      {severity && (
+                        <span className={`severity-badge ${severity === 'X' ? 'severity-x' : 'severity-slash'}`}>
+                          {severity === 'X' ? 'X (Non-Mission Capable)' : '/ (Deficiency)'}
+                        </span>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
 
               <p className="fault-status">

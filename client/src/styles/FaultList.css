@@ -62,6 +62,10 @@
 .issue-item {
   font-size: 14px;
   line-height: 1.4;
+  margin-bottom: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 .fault-actions {
@@ -204,4 +208,23 @@
 .deleted-fault .fault-actions button {
     opacity: 0.5;
     pointer-events: none;
+}
+
+.severity-badge {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.severity-x {
+  background-color: #ff4d4d;
+  color: white;
+}
+
+.severity-slash {
+  background-color: #ffc317;
+  color: #2a362a;
 }
