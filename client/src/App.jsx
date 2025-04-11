@@ -24,6 +24,7 @@ import OperatorFaultList from "./components/OperatorFaultList";
 import OrderedParts from "./components/OrderedParts";
 import AssignFaults from "./components/AssignFaults";
 import InventoryManagement from "./components/InventoryManagement";
+import FaultProgress from "./components/FaultProgress";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -112,7 +113,9 @@ function App() {
 
           {isLoggedIn ? (
             <>
+              
               <Route path="/home" element={<HomeScreen userType={userType} />} />
+              <Route path ="/fault-progress" element={<FaultProgress />} />
               <Route path="/fault-submission" element={<FaultSubmissionForm />} />
               <Route path="/fault-list" element={<FaultList />} />
               <Route path="/completed-faults" element={<CompletedFaultList />} />
