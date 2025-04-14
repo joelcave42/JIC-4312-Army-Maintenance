@@ -18,7 +18,8 @@ const {
   addFaultComment,
   undoDeleteFault,
   getFaultImage,
-  markFaultValidated
+  markFaultValidated,
+  getFaultsByDateRange
 } = require("../controllers/faults");
 
 const storage = multer.memoryStorage();
@@ -40,6 +41,7 @@ router.route("/:id/correct").patch(markFaultCorrected);
 router.route("/:id/claim").patch(claimFault);
 router.route("/:id/comment").patch(addFaultComment);
 router.route("/:id/undo-delete").patch(undoDeleteFault);
+router.route("/summary/by-date").get(getFaultsByDateRange);
 
 // Add this to see all registered routes
 console.log('Routes registered:', router.stack.map(r => r.route?.path).filter(Boolean));

@@ -43,6 +43,9 @@ const Menu = ({ userType }) => {
 
       {normalizedUserType === "manager" && (
         <>
+          <button onClick={() => navigate("/fault-progress")}>
+            Fault Progress
+          </button>
           <button onClick={() => navigate("/fault-submission")}>
             Start 5988
           </button>

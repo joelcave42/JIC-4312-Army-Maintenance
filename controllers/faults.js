@@ -135,9 +135,13 @@ const markFaultCorrected = async (req, res) => {
         const { id: faultID} = req.params;
         const updatedFault = await Fault.findByIdAndUpdate(
             faultID,
-            { status: "completed" },
+            { status: "completed",
+              completedAt: new Date()
+            },
+
             { new: true }
         );
+
 
         if (!updatedFault) {
             return res.status(404).json({ msg: `Fault with ID ${faultID} doesn't exist`});
@@ -301,6 +305,44 @@ const markFaultValidated = async (req, res) => {
   }
 };
 
+const getFaultsByDateRange = async (req, res) => {
+  try {
+    const { start, end } = req.query;
+
+    if (!start || !end) {
+      return res.status(400).json({ msg: "Both start and end query parameters are required." });
+    }
+
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+
+   
+    const completedCount = await Fault.countDocuments({
+      status: "completed",
+      completedAt: { $gte: startDate, $lte: endDate }
+    });
+
+    
+    const createdCount = await Fault.countDocuments({
+      createdAt: { $gte: startDate, $lte: endDate }
+    });
+
+    const stillOpenCount = await Fault.countDocuments({
+      status: { $nin: ["completed", "deleted"] }
+    });
+
+    res.status(200).json({
+      completedCount,
+      createdCount,
+      stillOpenCount
+    });
+
+  } catch (error) {
+    res.status(500).json({ msg: `Error fetching fault summary: ${error.message}` });
+  }
+};
+
+
 module.exports = {
     getAllFaults,
     getPendingFaults,
@@ -317,5 +359,6 @@ module.exports = {
     addFaultComment,
     undoDeleteFault,
     getFaultImage,
-    markFaultValidated
+    markFaultValidated,
+    getFaultsByDateRange
 };
