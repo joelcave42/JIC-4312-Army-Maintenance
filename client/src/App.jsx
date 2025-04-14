@@ -26,6 +26,7 @@ import AssignFaults from "./components/AssignFaults";
 import InventoryManagement from "./components/InventoryManagement";
 import ProfileScreen from "./components/ProfileScreen";
 import SoldierRoster from "./components/SoldierRoster";
+import FaultProgress from "./components/FaultProgress";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -114,7 +115,9 @@ function App() {
 
           {isLoggedIn ? (
             <>
+              
               <Route path="/home" element={<HomeScreen userType={userType} />} />
+              <Route path ="/fault-progress" element={<FaultProgress />} />
               <Route path="/fault-submission" element={<FaultSubmissionForm />} />
               <Route path="/fault-list" element={<FaultList />} />
               <Route path="/completed-faults" element={<CompletedFaultList />} />

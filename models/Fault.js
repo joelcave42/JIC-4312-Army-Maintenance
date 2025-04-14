@@ -60,6 +60,10 @@ const FaultSchema = new mongoose.Schema({
         type: String,
         default: null
     },
+    completedAt: {
+        type: Date,
+        default: null
+    },
     image: {
         type: Buffer,
         required: false,
