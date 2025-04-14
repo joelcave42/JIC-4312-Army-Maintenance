@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { createAccount, createAccountAsSupervisor, getAccounts, loginUser, getUnapprovedAccounts, approveAccount } = require("../controllers/accounts");
+const { createAccount, createAccountAsSupervisor, getAccounts, loginUser, getUnapprovedAccounts, approveAccount, updateCompany, getAccountInfoById } = require("../controllers/accounts");
 
 const Account = require ("../models/Account")
 
@@ -49,6 +49,10 @@ router.route("/unapproved")
 router.route("/approve/:userId")
     .put(approveAccount); // Approve an account
 
+router.route("/company")
+    .patch(updateCompany);
 
+router.route("/account-info")
+    .get(getAccountInfoById);
 
 module.exports = router;
