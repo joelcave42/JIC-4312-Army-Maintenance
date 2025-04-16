@@ -6,6 +6,7 @@ import { changeStatusListener } from "../features/globalValues/globalSlice";
 import { store } from "../store";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import Select from "react-select";
 
 const ClaimedFaults = () => {
   const navigate = useNavigate();
@@ -15,27 +16,28 @@ const ClaimedFaults = () => {
   const maintainerID = localStorage.getItem("userID");
   const { statusListener } = useSelector((state) => state.globalValues);
   const [imageUrls, setImageUrls] = useState({});
+  const [sortBy, setSortBy] = useState("date_desc");
+  const [searchVehicleId, setSearchVehicleId] = useState("");
 
   const fetchClaimedFaults = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/api/v1/faults");
-      
-      // Filter only the faults that are claimed AND claimedBy the current maintainer
-      // Remove the isNotCompleted check to show deleted faults
-      const claimed = response.data.faults.filter((fault) => {
+      const response = await axios.get("http://localhost:3000/api/v1/faults");  
+      const claimed = response.data.faults.filter((fault) => {  
         const isClaimedByMe = fault.claimedBy === maintainerID;
         const isNotCompleted = fault.status !== "completed";
         const isDeleted = fault.status === "deleted";
-
-        // Show if it's claimed by me and either not completed OR deleted
-        return (fault.isClaimed && isClaimedByMe && isNotCompleted) || 
-               (isDeleted && fault.deletedBy === maintainerID);
-      });
-
+        if (!maintainerID) {
+          return fault.isClaimed && isNotCompleted;
+        }
+        return (
+          (fault.isClaimed && isClaimedByMe && isNotCompleted) ||
+          (isDeleted && fault.deletedBy === maintainerID)
+        );
+      });  
       setFaults(claimed);
       claimed.forEach((fault) => fetchImageForFault(fault._id));
     } catch (error) {
-      console.error(error);
+      console.error("[ERROR] Fetching claimed faults:", error);
       toast.error("Error fetching claimed faults");
     }
   };
@@ -202,6 +204,62 @@ const ClaimedFaults = () => {
     setComments(initialComments);
   }, [faults]);
 
+  const selectStyles = {
+    control: (base) => ({
+      ...base,
+      backgroundColor: "transparent",
+      borderColor: "#FFD700",
+      boxShadow: "none",
+      color: "#FFD700",
+      minHeight: "40px",
+      "&:hover": { borderColor: "#FFD700" },
+    }),
+    menu: (base) => ({
+      ...base,
+      backgroundColor: "#1e2a1e",
+      color: "#FFD700",
+    }),
+    option: (base, state) => ({
+      ...base,
+      backgroundColor: state.isFocused ? "rgba(255, 215, 0, 0.2)" : "transparent",
+      color: "#FFD700",
+    }),
+    singleValue: (base) => ({
+      ...base,
+      color: "#FFD700",
+    }),
+    placeholder: (base) => ({
+      ...base,
+      color: "#FFD700",
+    }),
+  };
+
+  const filteredAndSortedFaults = [...faults]
+  .filter((fault) =>
+    fault.vehicleId.toLowerCase().includes(searchVehicleId.toLowerCase())
+  )
+  .sort((a, b) => {
+    let comparison = 0;
+
+    if (sortBy === "vehicleId") {
+        comparison = a.vehicleId.localeCompare(b.vehicleId);
+        if (comparison === 0) {
+          comparison = new Date(b.createdAt) - new Date(a.createdAt);
+        }
+    } else if (sortBy === "date_asc") {
+        comparison = new Date(a.createdAt) - new Date(b.createdAt);
+        if (comparison === 0) {
+          comparison = a.vehicleId.localeCompare(b.vehicleId);
+        }
+    } else if (sortBy === "date_desc") {
+        comparison = new Date(b.createdAt) - new Date(a.createdAt);
+        if (comparison === 0) {
+          comparison = a.vehicleId.localeCompare(b.vehicleId);
+        }
+    }
+    return comparison;
+  });
+
   return (
     <div className="claimed-faults-main">
       <button className="back-button" onClick={() => navigate("/home")}>
@@ -210,13 +268,56 @@ const ClaimedFaults = () => {
       <div>
         <h2 className="claimed-faults-title">My Claimed Faults</h2>
 
+        <div style={{ display: "flex", alignItems: "center", marginBottom: "20px", gap: "20px", width: "100%" }}>
+        <span style={{ color: "#FFD700" }}>Sort By:</span>
+        <div style={{ width: "200px" }}>
+          <Select
+            options={[
+              { value: "vehicleId", label: "Vehicle ID" },
+              { value: "status", label: "Status" },
+              { value: "date_asc", label: "Date (Ascending)" },
+              { value: "date_desc", label: "Date (Descending)" },
+            ]}
+            value={{ value: sortBy, label: {
+              vehicleId: "Vehicle ID",
+              status: "Status",
+              date_asc: "Date (Ascending)",
+              date_desc: "Date (Descending)"
+            }[sortBy] }}
+            onChange={(selected) => setSortBy(selected.value)}
+            placeholder="Sort By"
+            styles={selectStyles}
+          />
+        </div>
+        <input
+          type="text"
+          placeholder="Search by vehicle id"
+          value={searchVehicleId}
+          onChange={(e) => setSearchVehicleId(e.target.value)}
+          style={{
+            backgroundColor: "#1e2a1e",
+            border: "1px solid #FFD700",
+            color: "#FFD700",
+            padding: "8px",
+            borderRadius: "4px",
+            outline: "none",
+            height: "40px",
+            flexGrow: 1,
+            width: "100%",
+            minWidth: "200px",
+            '::placeholder': { color: "rgba(255, 215, 0, 0.6)" },
+          }}
+        />
+      </div>
+
         <div className="fault-items">
-          {faults.length === 0 ? (
+          {filteredAndSortedFaults.length === 0 ? (
             <p>No claimed faults found.</p>
           ) : (
-            faults.map((fault) => (
+            filteredAndSortedFaults.map((fault) => (
               <div key={fault._id} className={`fault-item ${fault.status === 'deleted' ? 'deleted-fault' : ''}`}>
                 <p className="vehicle-id">Vehicle ID: {fault.vehicleId}</p>
+                <p className="fault-date">Created: {new Date(fault.createdAt).toLocaleDateString()}</p>
                 {fault.status === 'deleted' && (
                     <div className="deleted-banner">
                         <p>DELETED</p>
