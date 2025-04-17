@@ -5,27 +5,28 @@
 }
 
 .inventory-title {
-  color: white;
+  color: #ffc317;
   margin-bottom: 30px;
   text-align: center;
   font-size: 2rem;
 }
 
 .back-button {
-  background-color: #4CAF50;
-  color: white;
-  border: none;
+  background: #2a362a;
+  color: #ffc317;
+  border: 1px solid #ffc317;
   padding: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
   margin-bottom: 20px;
-  transition: background-color 0.3s;
+  transition: all 0.3s;
   font-weight: 500;
   font-size: 1rem;
 }
 
 .back-button:hover {
-  background-color: #45a049;
+  background: #ffc317;
+  color: #2a362a;
 }
 
 .inventory-actions {
@@ -35,18 +36,18 @@
 }
 
 .add-item-button {
-  background-color: #4CAF50;
-  color: white;
+  background-color: #ffc317;
+  color: #2a362a;
   border: none;
   padding: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s;
-  font-weight: 500;
+  font-weight: bold;
 }
 
 .add-item-button:hover {
-  background-color: #45a049;
+  background-color: #e6b813;
 }
 
 .loading, .no-items {
@@ -78,10 +79,11 @@
 
 .inventory-item {
   background: #2a362a;
+  border: 1px solid #ffc317;
   border-radius: 10px;
   padding: 20px;
   color: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
   transition: transform 0.2s;
   display: flex;
   flex-direction: column;
@@ -116,12 +118,12 @@
 }
 
 .status-badge.low {
-  background-color: #ff4d4d;
+  background-color: #a83232;
   color: white;
 }
 
 .status-badge.ok {
-  background-color: #4CAF50;
+  background-color: #32a852;
   color: white;
 }
 
@@ -158,39 +160,43 @@
 .edit-button,
 .adjust-button,
 .delete-button {
-  padding: 6px 12px;
+  padding: 8px 14px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   font-size: 0.9rem;
-  transition: background-color 0.2s;
+  font-weight: bold;
+  transition: all 0.2s ease-in-out;
 }
 
 .edit-button {
-  background-color: #2196F3;
-  color: white;
+  background-color: #ffc317;
+  color: #2a362a;
 }
 
 .edit-button:hover {
-  background-color: #0b7dda;
+  background-color: #e6b813;
+  transform: translateY(-1px);
 }
 
 .adjust-button {
-  background-color: #ff9800;
+  background-color: #32a852;
   color: white;
 }
 
 .adjust-button:hover {
-  background-color: #e68a00;
+  background-color: #40c060;
+  transform: translateY(-1px);
 }
 
 .delete-button {
-  background-color: #f44336;
+  background-color: #a83232;
   color: white;
 }
 
 .delete-button:hover {
-  background-color: #da190b;
+  background-color: #c04040;
+  transform: translateY(-1px);
 }
 
 /* Modal Styles */
@@ -281,4 +287,4 @@
 
 .form-actions button[type="button"]:hover {
   background-color: #666;
-} 
+}
