@@ -1,3 +1,4 @@
+// src/components/FaultProgress.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -8,12 +9,13 @@ import "../styles/ClaimedFaults.css";
 const FaultProgress = () => {
   const navigate = useNavigate();
 
-  
+  // Summary state
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [summary, setSummary] = useState(null);
   const [error, setError] = useState("");
 
+  // Stagnant faults UI state
   const [showStagnant, setShowStagnant] = useState(false);
   const [stagnantFaults, setStagnantFaults] = useState([]);
   const [stagnantCount, setStagnantCount] = useState(null);
@@ -21,7 +23,33 @@ const FaultProgress = () => {
   const [searchVehicleId, setSearchVehicleId] = useState("");
   const [sortBy, setSortBy] = useState("date_desc");
 
- 
+  const selectStyles = {
+    control: (base) => ({
+      ...base,
+      backgroundColor: "transparent",
+      borderColor: "#FFD700",
+      boxShadow: "none",
+      color: "#FFD700",
+      minHeight: "40px",
+      "&:hover": { borderColor: "#FFD700" },
+    }),
+    menu: (base) => ({
+      ...base,
+      backgroundColor: "#1e2a1e",
+      color: "#FFD700",
+    }),
+    option: (base, state) => ({
+      ...base,
+      backgroundColor: state.isFocused
+        ? "rgba(255, 215, 0, 0.2)"
+        : "transparent",
+      color: "#FFD700",
+    }),
+    singleValue: (base) => ({ ...base, color: "#FFD700" }),
+    placeholder: (base) => ({ ...base, color: "#FFD700" }),
+  };
+
+  // Fetch the stagnant count on mount
   useEffect(() => {
     const fetchStagnantCount = async () => {
       try {
@@ -36,7 +64,7 @@ const FaultProgress = () => {
     fetchStagnantCount();
   }, []);
 
-
+  // Fetch summary by date range
   const fetchSummary = async () => {
     if (!startDate || !endDate) {
       setError("Please select both dates.");
@@ -60,7 +88,7 @@ const FaultProgress = () => {
     }
   };
 
-  
+  // Fetch stagnant faults when toggled open
   const fetchStagnantFaults = async () => {
     try {
       const { data } = await axios.get(
@@ -102,6 +130,9 @@ const FaultProgress = () => {
       let cmp = 0;
       if (sortBy === "vehicleId") {
         cmp = a.vehicleId.localeCompare(b.vehicleId);
+        if (!cmp) cmp = new Date(b.createdAt) - new Date(a.createdAt);
+      } else if (sortBy === "status") {
+        cmp = a.status.localeCompare(b.status);
         if (!cmp) cmp = new Date(b.createdAt) - new Date(a.createdAt);
       } else if (sortBy === "date_asc") {
         cmp = new Date(a.createdAt) - new Date(b.createdAt);
@@ -181,34 +212,37 @@ const FaultProgress = () => {
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "20px",
               marginBottom: "20px",
+              gap: "20px",
+              width: "100%",
             }}
           >
+            <span style={{ color: "#FFD700" }}>Sort By:</span>
             <div style={{ width: "200px" }}>
               <Select
                 options={[
                   { value: "vehicleId", label: "Vehicle ID" },
-                  { value: "date_asc", label: "Date ↑" },
-                  { value: "date_desc", label: "Date ↓" },
+                  { value: "status", label: "Status" },
+                  { value: "date_asc", label: "Date (Asc)" },
+                  { value: "date_desc", label: "Date (Desc)" },
                 ]}
                 value={{
                   value: sortBy,
-                  label:
-                    {
-                      vehicleId: "Vehicle ID",
-                      date_asc: "Date ↑",
-                      date_desc: "Date ↓",
-                    }[sortBy],
+                  label: {
+                    vehicleId: "Vehicle ID",
+                    status: "Status",
+                    date_asc: "Date (Asc)",
+                    date_desc: "Date (Desc)",
+                  }[sortBy],
                 }}
-                onChange={(s) => setSortBy(s.value)}
+                onChange={(selected) => setSortBy(selected.value)}
                 placeholder="Sort By"
+                styles={selectStyles}
               />
             </div>
-
             <input
               type="text"
-              placeholder="Search by vehicle ID"
+              placeholder="Search by vehicle id"
               value={searchVehicleId}
               onChange={(e) => setSearchVehicleId(e.target.value)}
               style={{
