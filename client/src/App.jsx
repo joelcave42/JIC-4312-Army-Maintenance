@@ -24,6 +24,8 @@ import OperatorFaultList from "./components/OperatorFaultList";
 import OrderedParts from "./components/OrderedParts";
 import AssignFaults from "./components/AssignFaults";
 import InventoryManagement from "./components/InventoryManagement";
+import ProfileScreen from "./components/ProfileScreen";
+import SoldierRoster from "./components/SoldierRoster";
 import FaultProgress from "./components/FaultProgress";
 
 function App() {
@@ -132,12 +134,14 @@ function App() {
               />
               <Route path="/claim-faults" element={<ClaimFaults />} />
               <Route path="/claimed-faults" element={<ClaimedFaults />} />
+              <Route path="/profile" element={<ProfileScreen />} />
 
               {/* Supervisor Route */}
               {(userType === "supervisor" || userType === "manager") && (
                 <>
                   <Route path="/supervisor-dashboard" element={<SupervisorDashboard />} />
                   <Route path="/assign-faults" element={<AssignFaults />} />
+                  <Route path="/soldier-roster" element={<SoldierRoster />} />
                 </>
               )}
               {/* Clerk Only Route */}
@@ -197,6 +201,21 @@ function App() {
                 </button>
               </Link>
             )}
+
+            <Link to="/profile" style={{ textDecoration: "none" }}>
+              <button
+                style={{
+                  background: "#973c12",
+                  color: "white",
+                  padding: "10px 10px",
+                  borderRadius: "3px",
+                  border: "none",
+                  cursor: "pointer",
+                }}
+              >
+                Profile
+              </button>
+            </Link>
           </div>
         )}
       </div>

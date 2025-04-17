@@ -96,6 +96,15 @@ const SupervisorDashboard = () => {
           Claim Faults for Maintainers
         </button>
       </div>
+
+      <div style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}>
+        <button
+            onClick={() => navigate("/soldier-roster")}
+            className="toggle-dashboard-button fixed-button-width"
+        >
+            Soldier Roster
+        </button>
+      </div>
     </div>
   );
 };
