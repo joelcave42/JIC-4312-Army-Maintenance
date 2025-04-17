@@ -341,7 +341,30 @@ const getFaultsByDateRange = async (req, res) => {
     res.status(500).json({ msg: `Error fetching fault summary: ${error.message}` });
   }
 };
+const getStagnantFaults = async (req, res) => {
+  try {
+ 
+    const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    console.log("Stagnant cutoff (oneWeekAgo):", oneWeekAgo);
 
+
+    const faults = await Fault.find({
+      status: { $nin: ["completed", "deleted"] },
+      $or: [
+        { lastUpdatedAt: { $lt: oneWeekAgo } },
+        { lastUpdatedAt: { $exists: false }, createdAt: { $lt: oneWeekAgo } }
+      ]
+    });
+
+    console.log("Stagnant faults found:", faults.length);
+    return res.status(200).json({ faults, count: faults.length });
+  } catch (error) {
+    console.error("Error in getStagnantFaults:", error);
+    return res.status(500).json({
+      msg: `Error fetching stagnant faults: ${error.message}`
+    });
+  }
+};
 
 module.exports = {
     getAllFaults,
@@ -360,5 +383,6 @@ module.exports = {
     undoDeleteFault,
     getFaultImage,
     markFaultValidated,
-    getFaultsByDateRange
+    getFaultsByDateRange,
+    getStagnantFaults
 };
