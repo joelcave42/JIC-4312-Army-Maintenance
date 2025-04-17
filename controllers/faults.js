@@ -1,4 +1,5 @@
 const Fault = require("../models/Fault");
+const Account = require("../models/Account");
 
 // Get all faults
 const getAllFaults = async (req, res) => {
@@ -343,26 +344,33 @@ const getFaultsByDateRange = async (req, res) => {
 };
 const getStagnantFaults = async (req, res) => {
   try {
+    const oneWeekAgo = new Date(Date.now() - 7*24*60*60*1000);
+
  
-    const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-    console.log("Stagnant cutoff (oneWeekAgo):", oneWeekAgo);
+    await Fault.updateMany(
+      { lastUpdatedAt: { $exists: false } },
+      [{ $set: { lastUpdatedAt: "$createdAt" } }]
+    );
 
-
-    const faults = await Fault.find({
+    // grab the raw faults
+    let faults = await Fault.find({
       status: { $nin: ["completed", "deleted"] },
-      $or: [
-        { lastUpdatedAt: { $lt: oneWeekAgo } },
-        { lastUpdatedAt: { $exists: false }, createdAt: { $lt: oneWeekAgo } }
-      ]
-    });
+      lastUpdatedAt: { $lt: oneWeekAgo }
+    }).lean();
 
-    console.log("Stagnant faults found:", faults.length);
+ 
+    await Promise.all(faults.map(async f => {
+      if (f.claimedBy) {
+        const acct = await Account.findById(f.claimedBy).select("username");
+        f.claimedBy = acct ? acct.username : "None";
+      }
+      else f.claimedBy = "None";
+    }));
+
     return res.status(200).json({ faults, count: faults.length });
-  } catch (error) {
-    console.error("Error in getStagnantFaults:", error);
-    return res.status(500).json({
-      msg: `Error fetching stagnant faults: ${error.message}`
-    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ msg: `Error: ${err.message}` });
   }
 };
 

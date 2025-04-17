@@ -127,3 +127,11 @@
   transform: none;
   outline: none;
 }
+
+/* New fields in the stagnant fault cards */
+.fault-created,
+.fault-claimed {
+  font-size: 14px;
+  margin: 6px 0;
+  color: #ffffff;
+}

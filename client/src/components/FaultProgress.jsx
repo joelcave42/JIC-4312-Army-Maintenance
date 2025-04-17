@@ -14,7 +14,6 @@ const FaultProgress = () => {
   const [summary, setSummary] = useState(null);
   const [error, setError] = useState("");
 
-  
   const [showStagnant, setShowStagnant] = useState(false);
   const [stagnantFaults, setStagnantFaults] = useState([]);
   const [stagnantCount, setStagnantCount] = useState(null);
@@ -22,7 +21,7 @@ const FaultProgress = () => {
   const [searchVehicleId, setSearchVehicleId] = useState("");
   const [sortBy, setSortBy] = useState("date_desc");
 
-  // Fetch the stagnant count on mount
+ 
   useEffect(() => {
     const fetchStagnantCount = async () => {
       try {
@@ -37,7 +36,7 @@ const FaultProgress = () => {
     fetchStagnantCount();
   }, []);
 
-  // --- Fetch summary by date range ---
+
   const fetchSummary = async () => {
     if (!startDate || !endDate) {
       setError("Please select both dates.");
@@ -61,7 +60,7 @@ const FaultProgress = () => {
     }
   };
 
-  // --- Fetch stagnant faults when toggled open ---
+  
   const fetchStagnantFaults = async () => {
     try {
       const { data } = await axios.get(
@@ -78,7 +77,7 @@ const FaultProgress = () => {
     if (showStagnant) fetchStagnantFaults();
   }, [showStagnant]);
 
-  
+  // Helper to fetch each fault’s image blob
   const fetchImageForFault = async (faultId) => {
     try {
       const resp = await axios.get(
@@ -90,11 +89,11 @@ const FaultProgress = () => {
         [faultId]: URL.createObjectURL(resp.data),
       }));
     } catch {
-      
+      // no image
     }
   };
 
-  // --- Filter & sort logic ---
+  // Filter & sort logic
   const filteredAndSorted = [...stagnantFaults]
     .filter((f) =>
       f.vehicleId.toLowerCase().includes(searchVehicleId.toLowerCase())
@@ -234,6 +233,12 @@ const FaultProgress = () => {
               filteredAndSorted.map((fault) => (
                 <div key={fault._id} className="fault-item">
                   <p className="vehicle-id">Vehicle ID: {fault.vehicleId}</p>
+                  <p className="fault-created">
+                    <strong>Created By:</strong> {fault.createdBy}
+                  </p>
+                  <p className="fault-claimed">
+                    <strong>Claimed By:</strong> {fault.claimedBy}
+                  </p>
                   <p className="fault-date">
                     Updated: {new Date(fault.lastUpdatedAt).toLocaleString()}
                   </p>
