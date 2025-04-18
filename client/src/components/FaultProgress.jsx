@@ -140,6 +140,18 @@ const FaultProgress = () => {
       } else if (sortBy === "date_desc") {
         cmp = new Date(b.createdAt) - new Date(a.createdAt);
         if (!cmp) cmp = a.vehicleId.localeCompare(b.vehicleId);
+      } else if (sortBy == "createdBy") {
+        cmp = (a.createdBy || "").localeCompare(b.createdBy || "");
+        if (!cmp) cmp = new Date(b.createdAt) - new Date(a.createdAt);
+      } else if (sortBy == "claimedBy") {
+        cmp = (a.claimedBy || "").localeCompare(b.claimedBy || "");
+        if (!cmp) cmp = new Date(b.createdAt) - new Date(a.createdAt);
+      } else if (sortBy == "updated_asc") {
+        cmp = new Date(a.lastUpdatedAt) - new Date(b.lastUpdatedAt);
+        if (!cmp) cmp = a.vehicleId.localeCompare(b.vehicleId);
+      } else if (sortBy == "updated_desc") {
+        cmp = new Date(b.lastUpdatedAt) - new Date(a.lastUpdatedAt);
+        if (!cmp) cmp = a.vehicleId.localeCompare(b.vehicleId);
       }
       return cmp;
     });
@@ -225,6 +237,10 @@ const FaultProgress = () => {
                   { value: "status", label: "Status" },
                   { value: "date_asc", label: "Date (Asc)" },
                   { value: "date_desc", label: "Date (Desc)" },
+                  { value: "createdBy", label: "Created By" },
+                  { value: "claimedBy", label: "Claimed By" },
+                  { value: "updated_asc", label: "Last Updated (asc)"},
+                  { value: "updated_desc", label: "Last Updated (desc)"},
                 ]}
                 value={{
                   value: sortBy,
@@ -233,6 +249,10 @@ const FaultProgress = () => {
                     status: "Status",
                     date_asc: "Date (Asc)",
                     date_desc: "Date (Desc)",
+                    createdBy: "Created By",
+                    claimedBy: "Claimed By",
+                    updated_asc: "Last Updated (asc)",
+                    updated_desc: "Last Updated (desc)",
                   }[sortBy],
                 }}
                 onChange={(selected) => setSortBy(selected.value)}
