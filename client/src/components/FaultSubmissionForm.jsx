@@ -727,6 +727,8 @@ const FaultSubmissionForm = ({ isReopenMode }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setShowConfirmation(true);
+    // Add class to body when modal opens
+    document.body.classList.add('modal-open');
   };
 
   const handleConfirmSubmit = async () => {
@@ -809,6 +811,8 @@ const FaultSubmissionForm = ({ isReopenMode }) => {
         toast.error("Error submitting faults: " + error.message);
       }
     }
+    // After form submission, remove modal-open class
+    document.body.classList.remove('modal-open');
   };
   
 
@@ -843,6 +847,12 @@ const FaultSubmissionForm = ({ isReopenMode }) => {
     if (!selectedVehicleId || !selectedVehicleType) return "";
     const vehicle = vehicleIds[selectedVehicleType].find(v => v.id === selectedVehicleId);
     return vehicle ? vehicle.name : "";
+  };
+
+  // Add a function to handle modal close that removes the body class
+  const handleCloseModal = () => {
+    setShowConfirmation(false);
+    document.body.classList.remove('modal-open');
   };
 
   return (
@@ -1186,16 +1196,10 @@ const FaultSubmissionForm = ({ isReopenMode }) => {
                 ))}
               </div>
               <div className="modal-buttons">
-                <button
-                  className="modal-button modal-cancel"
-                  onClick={() => setShowConfirmation(false)}
-                >
+                <button className="modal-button modal-cancel" onClick={handleCloseModal}>
                   Cancel
                 </button>
-                <button
-                  className="modal-button modal-confirm"
-                  onClick={handleConfirmSubmit}
-                >
+                <button className="modal-button modal-confirm" onClick={handleConfirmSubmit}>
                   Confirm Submission
                 </button>
               </div>

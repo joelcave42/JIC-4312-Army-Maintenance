@@ -18,6 +18,9 @@ const FaultList = () => {
   // Local state for the displayed faults
   const [faults, setFaults] = useState([]);
 
+  // Add username from localStorage to use for permission checks
+  const currentUsername = localStorage.getItem("username");
+
   // This tracks changes in your Redux store
   const { statusListener } = useSelector((state) => state.globalValues);
 
@@ -284,10 +287,22 @@ const FaultList = () => {
         <div className="fault-items">
           {filteredAndSortedFaults.map((fault) => (
             <div key={fault._id} className="fault-item">
-              <p className="vehicle-id">Vehicle ID: {fault.vehicleId}</p>
-              <p className="fault-date">Created on: {new Date(fault.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'numeric', day: 'numeric' })}</p>
-              <p className="fault-status"><strong>Status:</strong> {fault.status}</p>
-              <p className="fault-issues">Issues:</p>
+              <div className="vehicle-id">Vehicle ID: {fault.vehicleId}</div>
+              <div className="fault-creator">
+                <span className="creator-label">Created by: </span>
+                <span className="creator-name">{fault.createdBy || "Unknown"}</span>
+              </div>
+              <div className="fault-date">
+                <span className="date-label">Created on: </span>
+                <span className="date-value">{new Date(fault.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'numeric', day: 'numeric' })}</span>
+              </div>
+              <div className="fault-status">
+                <span className="status-label">Status: </span>
+                <span className="status-value">{fault.status}</span>
+              </div>
+              <div className="fault-issues">
+                <span className="issues-label">Issue: </span>
+              </div>
               <ul className="issues-list">
                 {fault.issues.map((issue, index) => (
                   <li key={index} className="issue-item">
@@ -306,12 +321,21 @@ const FaultList = () => {
                 </div>
               )}
               <div className="fault-actions">
-                <button onClick={() => deleteFault(fault._id)} className="delete-btn">
-                  Delete
-                </button>
-                <button onClick={() => correctFault(fault._id)} className="correct-btn">
-                  Fault Corrected
-                </button>
+                {/* Show buttons or view-only message */}
+                {(userType !== "operator" || fault.createdBy === currentUsername) ? (
+                  <>
+                    <button onClick={() => deleteFault(fault._id)} className="delete-btn">
+                      Delete
+                    </button>
+                    <button onClick={() => correctFault(fault._id)} className="correct-btn">
+                      Fault Corrected
+                    </button>
+                  </>
+                ) : (
+                  <div className="view-only-message">
+                    This fault is view-only. Contact the creator for changes.
+                  </div>
+                )}
 
                 {/* Add Validate button for clerks, supervisors, or maintainers, but only for pending faults */}
                 {(userType === "clerk" || userType === "supervisor" || userType === "maintainer") && fault.status === "pending" && (
@@ -327,7 +351,7 @@ const FaultList = () => {
                 {userType === "clerk" && (
                   <button
                     onClick={() => handleOpenOrderModal(fault._id)}
-                    style={{ marginTop: "10px" }}
+                    className="order-parts-btn"
                   >
                     Order Parts
                   </button>

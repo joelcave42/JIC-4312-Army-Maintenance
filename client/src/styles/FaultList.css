@@ -2,48 +2,42 @@
   padding: 20px;
   max-width: 1200px;
   margin: auto;
-  /* Dark Army green instead of pure #1E1E1E */
-  background: #232f23;
-  border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  background: none;
   color: #ffffff;
-  font-family: Arial, sans-serif;
+  font-family: 'Segoe UI', Arial, sans-serif;
 }
 
 .fault-list-main h2 {
   text-align: center;
-  font-size: 24px;
+  font-size: 28px;
   margin-bottom: 20px;
-  /* Use the same gold as in your login page: #ffc317 */
   color: #ffc317;
 }
 
 .fault-items {
   display: grid;
-  /* 3 columns on large screens */
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   gap: 20px;
-  
-  /* Collapses to 1 column on smaller screens */
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-  }
 }
 
 .fault-item {
-  /* Slightly softer dark green background than #2E2E2E */
-  background: #2a362a;
-  border: 1px solid #ffc317;
-  border-radius: 8px;
-  padding: 15px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 195, 23, 0.3);
+  border-radius: 10px;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+.fault-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 195, 23, 0.6);
 }
 
 .vehicle-id {
   font-size: 18px;
   font-weight: bold;
   margin-bottom: 10px;
-  /* Same gold color */
   color: #ffc317;
 }
 
@@ -51,6 +45,7 @@
   font-size: 16px;
   font-weight: bold;
   margin: 10px 0;
+  color: #ffc317;
 }
 
 .issues-list {
@@ -66,64 +61,103 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  position: relative;
+  padding-left: 0;
+}
+
+.issue-item::before {
+  content: none;
 }
 
 .fault-actions {
   display: flex;
-  justify-content: wrap;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 15px;
 }
 
 .delete-btn {
-  background: #ff6b6b; /* Red for delete */
+  background: #ff6b6b;
   color: #ffffff;
   border: none;
   padding: 8px 16px;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
   font-weight: bold;
-  transition: background 0.3s, transform 0.2s;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
 }
 
 .delete-btn:hover {
   background: #e85a5a;
   transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
 .correct-btn {
-    background: #ffc317;
-    color: #000;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: bold;
-    transition: background 0.3s, transform 0.2s;
+  background: #ffc317;
+  color: #2a362a;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
 }
 
-.correct-btn:hover{
-    background:#e6b813;
-    transform: translateY(-2px);
+.correct-btn:hover {
+  background: #e6b813;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
 .validate-btn {
-    background: #4CAF50; /* Green for validation */
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: bold;
-    transition: background 0.3s, transform 0.2s;
-    margin-right: 5px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
 }
 
 .validate-btn:hover {
-    background: #3e8e41;
-    transform: translateY(-2px);
+  background: #3e8e41;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.back-button {
+  display: inline-block;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #2a362a;
+  background-color: #ffc317;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  transition: all 0.25s ease;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+}
+
+.back-button:hover {
+  background-color: #e6b813;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.back-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
 }
 
 /* Toggle Fault List Button */
@@ -134,24 +168,31 @@
 
 .toggle-fault-list-button {
   background-color: #ffc317;
-  color: #2a362a; /* Dark green text for contrast */
+  color: #2a362a;
   border: none;
   padding: 12px 20px;
   font-size: 16px;
   font-weight: bold;
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  transition: all 0.25s ease;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
 }
 
 .toggle-fault-list-button:hover {
-  transform: scale(1.05);
-  background-color: #e6b813; /* Slightly darker gold */
+  background-color: #e6b813;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.toggle-fault-list-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
 }
 
 .fault-status {
   font-size: 14px;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 
 .fault-status strong {
@@ -159,10 +200,10 @@
 }
 
 .maintainer-comment {
-  margin: 10px 0;
-  padding: 8px;
-  background: rgba(255, 195, 23, 0.1);
-  border-radius: 4px;
+  margin: 15px 0;
+  padding: 12px;
+  background: rgba(255, 195, 23, 0.05);
+  border-radius: 8px;
   border-left: 3px solid #ffc317;
 }
 
@@ -175,39 +216,40 @@
 
 .comment-content {
   font-size: 14px;
+  line-height: 1.4;
 }
 
-/* Add these styles for deleted faults */
+/* Deleted faults */
 .deleted-fault {
-    position: relative;
-    opacity: 0.8;
-    background: #2a362a;
-    border: 1px solid #a83232; /* Red border for deleted faults */
+  position: relative;
+  opacity: 0.8;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(168, 50, 50, 0.5);
 }
 
 .deleted-banner {
-    background: rgba(168, 50, 50, 0.9); /* Semi-transparent red */
-    color: white;
-    padding: 4px 8px;
-    border-radius: 4px;
-    margin-bottom: 10px;
-    text-align: center;
+  background: rgba(168, 50, 50, 0.7);
+  color: white;
+  padding: 8px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  text-align: center;
 }
 
 .deleted-banner p {
-    margin: 0;
-    font-weight: bold;
+  margin: 0;
+  font-weight: bold;
 }
 
 .deleted-info {
-    font-size: 12px;
-    opacity: 0.8;
+  font-size: 12px;
+  opacity: 0.8;
 }
 
 /* Disable buttons for deleted faults */
 .deleted-fault .fault-actions button {
-    opacity: 0.5;
-    pointer-events: none;
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 .severity-badge {
@@ -227,4 +269,228 @@
 .severity-slash {
   background-color: #ffc317;
   color: #2a362a;
+}
+
+/* Part order modal */
+.order-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.order-modal {
+  background: linear-gradient(135deg, #2a362a 0%, #1a231a 100%);
+  border-radius: 10px;
+  padding: 25px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+.order-modal h3 {
+  color: #ffc317;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.order-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.form-group label {
+  color: #ffc317;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.form-group input {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 195, 23, 0.3);
+  background: rgba(0, 0, 0, 0.2);
+  color: white;
+}
+
+.form-group input:focus {
+  border-color: #ffc317;
+  outline: none;
+}
+
+.order-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.cancel-order-btn, .submit-order-btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  border: none;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+}
+
+.cancel-order-btn {
+  background: rgba(0, 0, 0, 0.3);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.cancel-order-btn:hover {
+  background: rgba(0, 0, 0, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.submit-order-btn {
+  background: #ffc317;
+  color: #2a362a;
+}
+
+.submit-order-btn:hover {
+  background: #e6b813;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Sorting and filtering controls */
+.filter-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  gap: 10px;
+}
+
+.filter-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filter-label {
+  color: #ffc317;
+  font-weight: bold;
+}
+
+.search-input {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 195, 23, 0.3);
+  background: rgba(0, 0, 0, 0.2);
+  color: white;
+  min-width: 200px;
+}
+
+.search-input:focus {
+  border-color: #ffc317;
+  outline: none;
+}
+
+.fault-creator, .fault-date, .fault-status, .fault-issues {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.creator-label, .date-label, .status-label, .issues-label {
+  color: #ffc317;
+  font-weight: bold;
+}
+
+.creator-name, .date-value, .status-value {
+  color: white;
+}
+
+/* Add these new styles to fix the part-item bullet points */
+.parts-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.part-item {
+  font-size: 14px;
+  line-height: 1.4;
+  margin-bottom: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  position: relative;
+  padding-left: 0;
+}
+
+.part-item::before {
+  content: none;
+}
+
+/* Also fix the issue-item style to ensure bullet points are removed */
+.issue-item {
+  font-size: 14px;
+  line-height: 1.4;
+  margin-bottom: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  position: relative;
+  padding-left: 0;
+}
+
+.issue-item::before {
+  content: none;
+}
+
+.view-only-message {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-style: italic;
+  text-align: center;
+  margin-bottom: 15px;
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.order-parts-btn {
+  background: #4a90e2;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+}
+
+.order-parts-btn:hover {
+  background: #3a80d2;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
