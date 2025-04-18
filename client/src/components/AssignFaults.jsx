@@ -147,7 +147,7 @@ const AssignFaults = () => {
 
   return (
     <div className="claim-faults-main">
-      <button className="back-button" onClick={() => navigate("/supervisor-dashboard")}>Back</button>
+      <button className="back-button" onClick={() => navigate(-1)}>Back</button>
 
       <h2 className="claim-faults-title">Assign Faults to Maintainers</h2>
 

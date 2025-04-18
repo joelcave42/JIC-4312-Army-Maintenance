@@ -102,7 +102,7 @@ const SoldierRoster = () => {
 
   return (
     <div className="soldier-roster-main">
-      <button className="back-button" onClick={() => navigate("/home")}>
+      <button className="back-button" onClick={() => navigate("/supervisor-dashboard")}>
         Back
       </button>
 

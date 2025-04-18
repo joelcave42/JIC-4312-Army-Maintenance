@@ -184,24 +184,6 @@ function App() {
               Sign Out
             </button>
 
-            {/* Supervisor Dashboard Button */}
-            {userType === "supervisor" && (
-              <Link to="/supervisor-dashboard" style={{ textDecoration: "none" }}>
-                <button
-                  style={{
-                    background: "#973c12",
-                    color: "white",
-                    padding: "10px 10px",
-                    borderRadius: "3px",
-                    border: "none",
-                    cursor: "pointer",
-                  }}
-                >
-                  Supervisor Dashboard
-                </button>
-              </Link>
-            )}
-
             <Link to="/profile" style={{ textDecoration: "none" }}>
               <button
                 style={{
