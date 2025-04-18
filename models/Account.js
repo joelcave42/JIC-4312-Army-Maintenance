@@ -11,7 +11,7 @@ const AccountSchema = new mongoose.Schema({
         required: true,
     },
     isActive: {type: Boolean, default: false, required: false},
-    company: { type: String, required: true },
+    company: { type: String, required: flase },
 });
 
 // Pre-save hook to hash password
