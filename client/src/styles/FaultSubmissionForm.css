@@ -2,12 +2,10 @@
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
-  /* Dark Army green instead of #1E1E1E */
-  background-color: #232f23;
+  background: none; /* Remove the box background */
   border-radius: 10px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
   color: #ffffff;
-  font-family: Arial, sans-serif;
+  font-family: 'Segoe UI', Arial, sans-serif;
   min-height: 80vh;
   display: flex;
   flex-direction: column;
@@ -17,19 +15,27 @@
   display: inline-block;
   padding: 10px 20px;
   font-size: 16px;
+  font-weight: bold;
   color: #2a362a; /* Dark green text */
   background-color: #ffc317; /* Army gold */
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   cursor: pointer;
   margin-bottom: 20px;
-  transition: background-color 0.3s, transform 0.2s;
+  transition: all 0.25s ease;
   align-self: flex-start;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
 }
 
 .back-button:hover {
   background-color: #e6b813;
   transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.back-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
 }
 
 /* Vehicle Selection Styles */
@@ -55,54 +61,34 @@
 .vehicle-button {
   padding: 35px;
   font-size: 24px;
-  color: #ffffff;
-  background-color: #2a362a;
-  border: 2px solid #ffc317;
-  border-radius: 15px;
+  color: #2a362a;
+  background-color: #ffc317;
+  border: none;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
   text-align: center;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
   min-height: 140px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.vehicle-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 195, 23, 0.2),
-    transparent
-  );
-  transition: 0.5s;
-}
-
 .vehicle-button:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
-  border-color: #e6b813;
-}
-
-.vehicle-button:hover::before {
-  left: 100%;
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  background-color: #e6b813;
 }
 
 .vehicle-button.selected {
-  background-color: #ffc317;
+  background-color: #e6b813;
   color: #2a362a;
   font-weight: bold;
   transform: scale(1.02);
-  box-shadow: 0 8px 20px rgba(255, 195, 23, 0.3);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
 .vehicle-button.selected::after {
@@ -120,7 +106,6 @@
   color: #ffc317;
   margin-bottom: 20px;
   text-align: center;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .vehicle-selection-subtitle {
@@ -136,18 +121,26 @@
 .next-button {
   padding: 12px 30px;
   font-size: 18px;
+  font-weight: bold;
   color: #2a362a;
   background-color: #ffc317;
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   cursor: pointer;
   margin-top: 20px;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
 }
 
 .next-button:hover {
   background-color: #e6b813;
   transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.next-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
 }
 
 /* Timeline Selection Styles */
@@ -169,30 +162,49 @@
 .timeline-button {
   padding: 20px;
   font-size: 16px;
-  color: #ffffff;
-  background-color: #2a362a;
-  border: 2px solid #ffc317;
-  border-radius: 10px;
+  font-weight: bold;
+  color: #2a362a;
+  background-color: #ffc317;
+  border: none;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
   text-align: center;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+  position: relative;
 }
 
 .timeline-button:hover {
+  background-color: #e6b813;
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.timeline-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
 }
 
 .timeline-button.selected {
-  background-color: #ffc317;
+  background-color: #e6b813;
   color: #2a362a;
   font-weight: bold;
+  transform: scale(1.02);
+}
+
+.timeline-button.selected::after {
+  content: '✓';
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 18px;
+  color: #2a362a;
 }
 
 .selected-timelines {
   margin: 20px 0;
   padding: 15px;
-  background-color: #2a362a;
+  background-color: rgba(0, 0, 0, 0.3);
   border-radius: 5px;
   text-align: center;
   color: #ffc317;
@@ -203,7 +215,7 @@
 .vehicle-id-box {
   text-align: center;
   padding: 15px;
-  background-color: #2a362a;
+  background-color: rgba(0, 0, 0, 0.3);
   color: #ffc317;
   font-size: 18px;
   font-weight: bold;
@@ -250,11 +262,10 @@
 }
 
 .fault-group {
-  flex: 1 1 45%;
-  background-color: #2a362a;
-  padding: 15px;
-  border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  margin-bottom: 30px;
+  padding: 20px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
 }
 
 .group-title {
@@ -325,10 +336,10 @@
 }
 
 .inspection-group {
-  background-color: #2a362a;
+  margin-bottom: 30px;
   padding: 20px;
-  border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
 }
 
 .group-title {
@@ -415,19 +426,29 @@
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  overflow: hidden;
+}
+
+/* Add a helper class for the body when modal is open */
+body.modal-open {
+  overflow: hidden;
+  height: 100vh;
+  position: fixed;
+  width: 100%;
 }
 
 .confirmation-modal {
-  background-color: #232f23;
-  border: 2px solid #ffc317;
-  border-radius: 15px;
+  background: linear-gradient(135deg, #2a362a 0%, #1a231a 100%);
   padding: 30px;
-  max-width: 800px;
+  border-radius: 10px;
   width: 90%;
-  max-height: 80vh;
+  max-width: 600px;
+  max-height: 90vh;
   overflow-y: auto;
   position: relative;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  margin: 0 auto;
+  text-align: center;
 }
 
 .modal-title {
@@ -441,25 +462,28 @@
 .modal-content {
   color: #ffffff;
   margin-bottom: 30px;
+  text-align: center;
 }
 
 .modal-vehicle-info {
-  background-color: #2a362a;
+  margin: 15px auto;
   padding: 15px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  text-align: center;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 5px;
+  max-width: 500px;
 }
 
 .modal-vehicle-info div {
   margin: 5px 0;
   font-size: 18px;
+  text-align: center;
 }
 
 .modal-vehicle-info .vehicle-name {
   color: #ffc317;
   font-weight: bold;
   font-size: 20px;
+  text-align: center;
 }
 
 .modal-username {
@@ -468,12 +492,15 @@
   border-top: 1px solid rgba(255, 195, 23, 0.2);
   color: #ffc317;
   font-weight: bold;
+  text-align: center;
 }
 
 .modal-faults {
   max-height: 400px;
   overflow-y: auto;
   padding-right: 10px;
+  margin: 0 auto;
+  max-width: 500px;
 }
 
 .modal-faults::-webkit-scrollbar {
@@ -495,10 +522,11 @@
 }
 
 .modal-fault-group {
-  background-color: #2a362a;
-  padding: 15px;
-  border-radius: 10px;
   margin-bottom: 15px;
+  padding: 15px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 5px;
+  text-align: left;
 }
 
 .modal-fault-group-title {
@@ -506,6 +534,7 @@
   font-size: 18px;
   font-weight: bold;
   margin-bottom: 10px;
+  text-align: center;
 }
 
 .modal-fault-item {
@@ -547,9 +576,9 @@
 }
 
 .modal-cancel {
-  background-color: #2a362a;
+  background-color: rgba(0, 0, 0, 0.3);
   color: #ffffff;
-  border: 2px solid #ffc317;
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .modal-cancel:hover {

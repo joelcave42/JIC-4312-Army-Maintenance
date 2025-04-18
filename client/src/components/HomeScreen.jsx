@@ -64,28 +64,39 @@ const HomeScreen = ({ userType }) => {
 
   return (
     <div className="home-screen">
-      <h1 className="home-title">
-        U.S. Army Equipment Maintenance Intake System
-      </h1>
+      <div className="hero-section">
+        <h1 className="home-title">
+          U.S. Army Equipment Maintenance Intake System
+        </h1>
+        <p className="home-subtitle">
+          Streamlined maintenance tracking and management for military equipment
+        </p>
+      </div>
 
       {/* Banner for newly arrived parts */}
       {userType === "operator" && showBanner && arrivedParts.length > 0 && (
-        <div style={{ background: "#333", color: "#ffd700", padding: 10, margin: 10 }}>
-          <h3>New Arrivals Since Last Login</h3>
-          <ul>
-            {arrivedParts.map((part) => (
-              <li key={part._id}>
-                Part "{part.partName}" arrived for Fault #
-                {part.fault?._id?.toString().slice(-4)}
-              </li>
-            ))}
-          </ul>
-          <button onClick={handleDismiss}>Dismiss</button>
+        <div className="notification-banner">
+          <div className="notification-content">
+            <h3>New Arrivals Since Last Login</h3>
+            <ul>
+              {arrivedParts.map((part) => (
+                <li key={part._id}>
+                  Part "{part.partName}" arrived for Fault #
+                  {part.fault?._id?.toString().slice(-4)}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <button className="dismiss-button" onClick={handleDismiss}>
+            Dismiss
+          </button>
         </div>
       )}
 
       {/* Render the role-based menu */}
-      <Menu userType={userType} />
+      <div className="menu-section">
+        <Menu userType={userType} />
+      </div>
     </div>
   );
 };
