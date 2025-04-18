@@ -19,7 +19,8 @@ const {
   undoDeleteFault,
   getFaultImage,
   markFaultValidated,
-  getFaultsByDateRange
+  getFaultsByDateRange,
+  getStagnantFaults
 } = require("../controllers/faults");
 
 const storage = multer.memoryStorage();
@@ -29,6 +30,9 @@ const upload = multer({ storage });
 console.log('Registering fault routes...');
 
 router.route("/operator/:username").get(getOperatorFaults);
+router.route("/summary/by-date").get(getFaultsByDateRange);
+router.route("/stagnant").get(getStagnantFaults);
+
 router.route("/").get(getAllFaults).post(upload.single("image"), addFault);
 router.route("/:id/image").get(getFaultImage);
 router.route("/pending").get(getPendingFaults);
@@ -41,7 +45,6 @@ router.route("/:id/correct").patch(markFaultCorrected);
 router.route("/:id/claim").patch(claimFault);
 router.route("/:id/comment").patch(addFaultComment);
 router.route("/:id/undo-delete").patch(undoDeleteFault);
-router.route("/summary/by-date").get(getFaultsByDateRange);
 
 // Add this to see all registered routes
 console.log('Routes registered:', router.stack.map(r => r.route?.path).filter(Boolean));

@@ -1,4 +1,5 @@
 const Fault = require("../models/Fault");
+const Account = require("../models/Account");
 
 // Get all faults
 const getAllFaults = async (req, res) => {
@@ -341,7 +342,37 @@ const getFaultsByDateRange = async (req, res) => {
     res.status(500).json({ msg: `Error fetching fault summary: ${error.message}` });
   }
 };
+const getStagnantFaults = async (req, res) => {
+  try {
+    const oneWeekAgo = new Date(Date.now() - 7*24*60*60*1000);
 
+ 
+    await Fault.updateMany(
+      { lastUpdatedAt: { $exists: false } },
+      [{ $set: { lastUpdatedAt: "$createdAt" } }]
+    );
+
+    // grab the raw faults
+    let faults = await Fault.find({
+      status: { $nin: ["completed", "deleted"] },
+      lastUpdatedAt: { $lt: oneWeekAgo }
+    }).lean();
+
+ 
+    await Promise.all(faults.map(async f => {
+      if (f.claimedBy) {
+        const acct = await Account.findById(f.claimedBy).select("username");
+        f.claimedBy = acct ? acct.username : "None";
+      }
+      else f.claimedBy = "None";
+    }));
+
+    return res.status(200).json({ faults, count: faults.length });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ msg: `Error: ${err.message}` });
+  }
+};
 
 module.exports = {
     getAllFaults,
@@ -360,5 +391,6 @@ module.exports = {
     undoDeleteFault,
     getFaultImage,
     markFaultValidated,
-    getFaultsByDateRange
+    getFaultsByDateRange,
+    getStagnantFaults
 };

@@ -36,6 +36,10 @@ const FaultSchema = new mongoose.Schema({
         default: Date.now,
         index: true
     },
+    lastUpdatedAt: {
+        type: Date,
+        default: Date.now
+    },
     isClaimed: {
         type: Boolean,
         default: false
@@ -75,5 +79,19 @@ const FaultSchema = new mongoose.Schema({
 });
 
 FaultSchema.index({ createdAt: 1 }); //stores indexes from oldest creation to newest
+//Triggers on any save
+FaultSchema.pre("save", function (next) {
+    this.lastUpdatedAt = Date.now(); // Update lastUpdatedAt before saving
+    next();
+});
+//Triggers on any query based update
+function setLastUpdatedAt(next) {
+    this.lastUpdatedAt = Date.now(); // Update lastUpdatedAt before saving
+    next();
+}
+FaultSchema
+    .pre("updateOne", setLastUpdatedAt)
+    .pre("updateMany", setLastUpdatedAt)
+    .pre("findOneAndUpdate", setLastUpdatedAt);
 
 module.exports = mongoose.model("Fault", FaultSchema);
