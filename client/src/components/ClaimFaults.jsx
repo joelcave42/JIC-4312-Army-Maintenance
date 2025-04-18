@@ -154,7 +154,7 @@ const ClaimFaults = () => {
   
   return (
     <div className="claim-faults-main">
-      <button className="back-button" onClick={() => navigate("/home")}>
+      <button className="back-button" onClick={() => navigate("/supervisor-dashboard")}>
         Back
       </button>
 
