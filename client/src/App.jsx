@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -7,6 +7,7 @@ import {
   Link,
 } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+import { FaUserCircle } from 'react-icons/fa';
 
 import LoginPage from "./components/LoginPage";
 import SignUpPage from "./components/SignUpPage";
@@ -27,10 +28,13 @@ import InventoryManagement from "./components/InventoryManagement";
 import ProfileScreen from "./components/ProfileScreen";
 import SoldierRoster from "./components/SoldierRoster";
 import FaultProgress from "./components/FaultProgress";
+import './styles/Index.css'
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userType, setUserType] = useState("");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
   const dispatch = useDispatch();
 
   // Load login state from localStorage when the app starts
@@ -45,6 +49,24 @@ function App() {
       fetchUserType();
     }
   }, [dispatch]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    };
+
+    if (dropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dropdownOpen]);
 
   // Fetches the current user's type
   const fetchUserType = async () => {
@@ -79,6 +101,7 @@ function App() {
   const handleLogout = () => {
     setIsLoggedIn(false);
     setUserType("");
+    setDropdownOpen(false);
     localStorage.removeItem("isLoggedIn");
     localStorage.removeItem("username");
     localStorage.removeItem("userType");
@@ -87,15 +110,11 @@ function App() {
 
   return (
     <Router>
-      <div className="container-main">
+      <div className="container-main" style={{ position: 'relative' }}>
         <ToastContainer position="top-center" />
 
-        {/* 
-          ADDED: If user is logged in, display a small text line showing their userType. 
-          Everything else remains the same as your original code.
-        */}
         {isLoggedIn && (
-          <div style={{ textAlign: "center", padding: "10px", color: "#ffd700" }}>
+          <div style={{ textAlign: "center", padding: "10px", color: "#ffd700", background: "#2a362a", borderBottom: "1px solid #3b473b",}}>
             Logged in as: <strong>{userType.charAt(0).toUpperCase() + userType.slice(1)}</strong>
           </div>
         )}
@@ -160,44 +179,40 @@ function App() {
         </Routes>
 
         {isLoggedIn && (
-          <div
-            style={{
-              position: "absolute",
-              top: "10px",
-              right: "25px",
-              display: "flex",
-              flexDirection: "column",
-              gap: "10px",
-            }}
-          >
+          <div ref={dropdownRef} className="profile-icon-container" >
             <button
-              style={{
-                background: "#973c12",
-                color: "white",
-                padding: "10px 20px",
-                borderRadius: "3px",
-                border: "none",
-                cursor: "pointer",
-              }}
-              onClick={handleLogout}
+              className="profile-icon-button" 
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+              aria-haspopup="true"
+              aria-expanded={dropdownOpen}
             >
-              Sign Out
+              <FaUserCircle size={42} /> {/* Icon Component */}
             </button>
 
-            <Link to="/profile" style={{ textDecoration: "none" }}>
-              <button
-                style={{
-                  background: "#973c12",
-                  color: "white",
-                  padding: "10px 10px",
-                  borderRadius: "3px",
-                  border: "none",
-                  cursor: "pointer",
-                }}
-              >
-                Profile
-              </button>
-            </Link>
+            {dropdownOpen && (
+              <div className="profile-dropdown" role="menu">
+                <Link
+                  to="/profile"
+                  className="dropdown-item" 
+                  role="menuitem"
+                  onClick={() => setDropdownOpen(false)} 
+                  // style={{ padding: '8px 15px', color: '#333', textDecoration: 'none', display: 'block', background: 'none', border: 'none', textAlign: 'left', width: '100%', cursor: 'pointer' }}
+                >
+                  Profile
+                </Link>
+                {/* Optional Separator */}
+                 <div className="dropdown-separator"></div>
+                {/* Sign Out Button */}
+                <button
+                  className="dropdown-item" 
+                  role="menuitem"
+                  onClick={handleLogout} 
+                   // style={{ padding: '8px 15px', color: '#333', textDecoration: 'none', display: 'block', background: 'none', border: 'none', textAlign: 'left', width: '100%', cursor: 'pointer' }}
+                >
+                  Sign Out
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>
