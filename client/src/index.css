@@ -9,8 +9,7 @@
   /* General Styles */
   body {
     font-family: Arial, sans-serif;
-    /* Keep the gradient, but remove flex properties and fixed height: */
-    background: linear-gradient(135deg, #2a362a 0%, #000000 100%);
+    background: linear-gradient(135deg, #2a362a 0%, #000000 100%) fixed;
     color: #FFFFFF;
     /* Allow body to expand with content: */
     min-height: 100vh;
@@ -32,7 +31,7 @@
     display: flex;
     flex-direction: column;
     row-gap: 20px;
-    /* Removed “justify-content: center; align-items: center;” 
+    /* Removed "justify-content: center; align-items: center;" 
        so it doesn't force the container to the vertical center */
   }
   
