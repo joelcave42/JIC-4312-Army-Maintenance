@@ -43,62 +43,37 @@ Develop a web and mobile application that allows operators to log vehicle defici
 
 # Release Notes
 
-## Version 0.4.0 Release Notes
+## Version 1.0.0 Release Notes
 
 ### New Features
-- Implemented functionality to allow supervisors to assign maintainence tasks to maintainers
-- Implemented undo functionality for fault submissions
-- Implemented simple parts inventory system
-- Implemented fault editing capabilites
-- Implemented functionality to allow for pictures to be attached to each fault
-
-### Bug Fixes
-- Changed faults to present each issue as its own fault
-
-## Version 0.3.0 Release Notes
-
-### New Features
+- Implemented a User Interface to allow users (operators, maintainers, supervisors, etc.) to log in
+- Implemented the 5988 form to allow vehicle operators to submit faults with vehicles
+- Implemented the ability for anybody to create an account
+- Implemented a login button that is able to verify correct credentials with database
+- Implemented a role-specific home screen for all users to be directed to upon log in
+- Implemented a supervisor dashboard to track maintenance tasks
+- Implemented supervisor account authorization functionality
 - Implemented functionality to allow maintainers to claim faults as their own
 - Implemented functionality to allow maintainers to change the status of their claimed faults
 - Implemented a dashboard for operators to view faults on their vehicles
 - Implemented to part order process for supervisors to order and maintainers and operators to see ordered parts
 - Implemented the entire 5988 PMCS form process for two vehicles provided to us by our client
-
-### Bug Fixes
-- Fixed bug where user type was not displayed on login
-
-## Version 0.2.0 Release Notes
-
-### New Features
-- Implemented a role-specific home screen for all users to be directed to upon log in
-- Implemented a supervisor dashboard to track maintenance tasks
-- Implemented supervisor account authorization functionality
-- Refactored log in and sign up UI
-- Added copyright information and NOTICE file for attributions
-
-### Bug Fixes
-- Fixed bug where operators and maintainers were unable to see buttons
-- Removed unnecessary schema and backend code for "people"
-
-## Version 0.1.0 Release Notes
-
-### New Features
-- Implemented a User Interface to allow users (operators, maintainers, supervisors, etc.) to log in
-- Refined the 5988 form to allow vehicle operators to submit faults with vehicles
-- Implemented the ability for anybody to create an account
-- Database has been setup to store the login information via MongoDB
-- Login button is able to verify correct credentials with database
+- Implemented functionality to allow supervisors to assign maintainence tasks to maintainers
+- Implemented undo functionality for fault submissions
+- Implemented simple parts inventory system
+- Implemented fault editing capabilites
+- Implemented functionality to allow for pictures to be attached to each fault
+- Implemented a profile page and functionality for users and supervisors to add/change the user's company
+- Implemented a search bar to search faults by vehicle ID
+- Implemented a sorting filter to sort faults by operator, maintainer, date, etc.
+- Implemented functionality to allow managers to view and address stagnant faults
 
 ### Bug Fixes
 - Fixed bug of the option to view previously submitted 5988 not displaying underneath the 5988 form
-
-
-## Version 0.0.0 Release Notes
-### Features
-- MERN CRUD Operations: The core of this application, allowing for full management of database entries.
-- Interactive UI: A React-based front end that provides a responsive and engaging user experience.
-- Guided 5988 Form: The form that allows vehicle operators to log issues with their vehicles
-- Vehicle Issues Database: A skeleton database that stores the issues logged by operators
+- Fixed bug where operators and maintainers were unable to see buttons
+- Removed unnecessary schema and backend code for "people"
+- Fixed bug where user type was not displayed on login
+- Changed faults to present each issue as its own fault
 
 ### Application CRUD Operations
 - Create: Add new entries to the database.
@@ -107,23 +82,19 @@ Develop a web and mobile application that allows operators to log vehicle defici
 - Delete: Remove unwanted entries.
 
 ### Technologies Used
-Frontend:
+
+**Frontend:**
 - React.js: A JavaScript library for building user interfaces.
 - Redux Toolkit: Advanced state management for React applications.
 - Toastify: For displaying elegant notifications.
 
-Backend:
+**Backend:**
 - Node.js: JavaScript runtime environment.
 - Express: Web application framework for Node.js.
 - MongoDB: NoSQL database for storing data.
 
-### Bug Fixes
-- None in this release
-
-### Known Issues
-- None in this release
-
 ### Installation
+See the full [Installation Guide](./INSTALLATION.md).
 To run the app you need to have Node.js installed and follow these steps:
 1. Download the repository locally or clone it:
 
