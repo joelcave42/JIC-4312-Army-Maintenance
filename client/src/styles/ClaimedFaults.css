@@ -104,8 +104,10 @@
 
 .comment-input-container {
   display: flex;
+  align-items: stretch;
   gap: 8px;
   width: 100%;
+  margin: 0;
 }
 
 .comment-input {
@@ -116,7 +118,11 @@
   background-color: #2a362a;
   color: white;
   font-size: 14px;
-  height: 32px;
+  height: 36px;
+  margin: 0;
+  line-height: 20px;
+  box-sizing: border-box;
+  display: block;
 }
 
 .comment-input::placeholder {
@@ -127,9 +133,17 @@
   background: #ffc317;
   color: #2a362a;
   min-width: 60px;
-  padding: 6px 12px;
-  height: 32px;
+  padding: 0 12px;
+  height: 36px;
+  margin: 0;
   flex: 0 0 auto;
+  border-radius: 4px;
+  font-weight: bold;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
 }
 
 .comment-btn:hover {
