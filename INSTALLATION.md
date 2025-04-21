@@ -147,6 +147,3 @@ npm install
 
 ---
 
-For additional support, please contact the development team or open an issue on the project's GitHub repository.
-
----
