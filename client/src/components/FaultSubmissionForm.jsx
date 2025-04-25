@@ -610,8 +610,23 @@ const FaultSubmissionForm = ({ isReopenMode }) => {
           setSelectedVehicleType(existingFault.vehicleType);
           setSelectedVehicleId(existingFault.vehicleId);
           setSelectedTimelines(existingFault.timelines || []);
-          setSelectedFaults(existingFault.issues || []);
-  
+          // setSelectedFaults(existingFault.issues || []);
+          const initialFaults = [];
+          const initialSeverities = {};
+          (existingFault.issues || []).forEach(issueString => {
+              const match = issueString.match(/^([X\/])\s*-\s*(.*)$/);
+              if (match) {
+                  const severity = match[1];
+                  const id = match[2];
+                  initialFaults.push(id); 
+                  initialSeverities[id] = severity; 
+              } else {
+                  initialFaults.push(issueString);
+                  initialSeverities[issueString] = 'X'; 
+              }
+          });
+          setSelectedFaults(initialFaults);
+          setFaultSeverities(initialSeverities);
           // If you want to SKIP the "select vehicle type" screens,
           // jump straight to the final step:
           setShowVehicleIdSelection(true);
